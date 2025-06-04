@@ -109,4 +109,13 @@ button.expand-thread:hover {
   color: black;
 }
 
+/* 设置 iframe 的宽度为父容器的100%，最大宽度为 640px，保持 16:9 宽高比 */
+iframe {
+  width: 100%;          /* 宽度自适应父容器 */
+  height: auto;         /* 高度根据宽度自适应 */
+  max-width: 640px;     /* 最大宽度 */
+  aspect-ratio: 16/9;   /* 设置宽高比为 16:9，保持视频比例 */
+  border: 2px solid #33ff33;  /* 视频边框样式 */
+}
+
 }
