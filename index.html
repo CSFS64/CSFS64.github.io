@@ -49,28 +49,41 @@
   <p><em>终端日志仅供记录，不代表官方立场。</em></p>
 
   <script>
-    function expandThread(button) {
-    const thread = button.closest('details');  // 找到当前按钮所在的 details 容器
-    const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
-  
-    // 检查当前是否展开
-    if (thread.classList.contains('expanded')) {
-      // 如果已展开，则收起
-      thread.classList.remove('expanded');
-      button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
-      threadItems.forEach((item, index) => {
-        // 保持第一个消息可见，其他消息隐藏
-        if (index !== 0) {
-          item.style.display = 'none';  // 隐藏其他 thread-item
-        }
+    // 页面加载时默认显示第一个消息
+    document.addEventListener("DOMContentLoaded", function () {
+      const threads = document.querySelectorAll('.thread');
+      threads.forEach(thread => {
+        const threadItems = thread.querySelectorAll('.thread-item');
+        threadItems[0].style.display = 'block'; // 默认显示第一个消息
+        threadItems.forEach((item, index) => {
+          if (index > 0) item.style.display = 'none'; // 隐藏后续消息
+        });
       });
-    } else {
-      // 如果未展开，则展开
-      thread.classList.add('expanded');
-      button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
-      threadItems.forEach(item => item.style.display = 'block');  // 显示所有 thread-item
+    });
+    
+    // 展开/收起功能
+    function expandThread(button) {
+      const thread = button.closest('details');  // 找到当前按钮所在的 details 容器
+      const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
+      
+      // 检查当前是否展开
+      if (thread.classList.contains('expanded')) {
+        // 如果已展开，则收起
+        thread.classList.remove('expanded');
+        button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
+        threadItems.forEach((item, index) => {
+          // 保持第一个消息可见，其他消息隐藏
+          if (index !== 0) {
+            item.style.display = 'none';  // 隐藏其他 thread-item
+          }
+        });
+      } else {
+        // 如果未展开，则展开
+        thread.classList.add('expanded');
+        button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
+        threadItems.forEach(item => item.style.display = 'block');  // 显示所有 thread-item
+      }
     }
-  }
   </script>
 
   <script>
