@@ -92,7 +92,7 @@ video {
   left: 100%;               /* 让竖线紧贴在文字宽度的最右边 */
   top: 100%;                /* 从文字底部开始画 */
   width: 2px;
-  height: calc(100% + 0.5em);/* 竖线从此往下延伸到内容前 */}
+  height: calc(100% + 0.5em);/* 竖线从此往下延伸到内容前 */
   background-color: #33ff33;
   z-index: 0;               /* 放在文字后面 */
 }
@@ -104,7 +104,7 @@ video {
   color: #33ff33;
 }
 
-/* —— 4. 如果“最后更新”这一行带了.extra-update 类，则不画竖线 —— */
+/* —— 4. 如果“最后更新”这一行带了 .extra-update 类，则不画竖线 —— */
 .timestamp.extra-update::after {
   display: none;
 }
