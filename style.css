@@ -69,41 +69,30 @@ video {
   margin-top: 0.5em;
 }
 
-/* ✅ 新 thread-item 样式 */
-.thread-item {
-  position: relative;
-  padding-top: 0.5em;
-  margin-bottom: 1.5em;
-}
-
-/* ✅ 显示时间戳 + 下方竖线 */
 .timestamp {
   font-size: 0.85em;
   color: #66ff66;
-  position: relative;
-  z-index: 1;
+  margin-bottom: 0.5em;
 }
 
-.timestamp::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: calc(100% + 0.5em);
-  background-color: #33ff33;
-  z-index: 0;
+.content-block {
+  margin-left: 1em;
+  margin-top: 0.5em;
 }
 
-/* ✅ 让时间和内容间隔，露出竖线 */
-.thread-item p,
-.thread-item video {
-  margin-top: 1em;
-  color: #33ff33;
+.thread-item {
+  display: none; /* 默认隐藏所有 */
 }
 
-/* ✅ 展开按钮样式保持不变 */
+/* 第一个 thread-item 显示出来 */
+.thread-item:first-child {
+  display: block;
+}
+
+.thread.expanded .thread-item {
+  display: block;
+}
+
 button.expand-thread {
   margin-top: 1em;
   margin-left: 1em;
@@ -118,4 +107,6 @@ button.expand-thread {
 button.expand-thread:hover {
   background-color: #33ff33;
   color: black;
+}
+
 }
