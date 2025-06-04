@@ -78,7 +78,6 @@ video {
 
 /* ✅ 显示时间戳 + 下方竖线 */
 .timestamp {
-  text-align: center;
   font-size: 0.85em;
   color: #66ff66;
   position: relative;
