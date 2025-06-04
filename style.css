@@ -91,6 +91,14 @@ video {
   line-height: 1.6;      /* 行间距，确保文本不至于挤在一起 */
 }
 
+.thread-separator {
+  text-align: center;
+  font-size: 2em;
+  color: #33ff33; /* 设置竖线的颜色 */
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 /* —— 换行控制 —— */
 .content-block br {
   display: block;        /* 确保 <br> 标签能真正换行 */
