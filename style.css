@@ -7,18 +7,18 @@ body {
     transparent 1px,
     transparent 2px
   );
-  color: #00ff00;
+  color: #33ff33;
   font-family: 'Courier New', Courier, monospace;
   padding: 2em;
   line-height: 1.6;
 }
 
 body, p {
-  color: #00ff00;
+  color: #33ff33;
 }
 
 h1, h2, h3 {
-  color: #00ff00;
+  color: #33ff33;
 }
 
 ul.date-list {
@@ -31,17 +31,17 @@ ul.date-list li {
 }
 
 a {
-  color: #00ff00;
+  color: #33ff33;
   text-decoration: underline;
 }
 
 a:hover {
-  background-color: #00ff00;
+  background-color: #33ff33;
   color: black;
 }
 
 details {
-  border: 1px solid #00ff00;
+  border: 1px solid #33ff33;
   padding: 1em;
   margin-bottom: 1em;
   border-radius: 5px;
@@ -54,18 +54,18 @@ details > summary {
   display: inline-block;
   font-weight: bold;
   background-color: transparent;
-  color: #00ff00;
+  color: #33ff33;
 }
 
 details > summary:hover {
-  background-color: #00ff00;
+  background-color: #33ff33;
   color: black;
 }
 
 video {
   width: 100%;
   max-width: 640px;
-  border: 2px solid #00ff00;
+  border: 2px solid #33ff33;
   margin-top: 0.5em;
 }
 
