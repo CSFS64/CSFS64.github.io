@@ -72,10 +72,11 @@ video {
   margin-top: 0.5em;
 }
 
-/* —— 插入的图片样式 —— */
+/* —— 图片样式 —— */
 .separator-image {
   width: 100%;              /* 宽度自适应父容器 */
   height: auto;             /* 高度自动调整，保持比例 */
+  border: 2px solid #33ff33;
   vertical-align: middle;   /* 确保图片与时间戳垂直居中对齐 */
   margin-right: 10px;       /* 图片和正文之间留一些间距 */
 }
