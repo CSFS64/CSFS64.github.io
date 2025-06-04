@@ -51,20 +51,19 @@
   <script>
     // 展开/收起功能
     function expandThread(button) {
-      const thread = button.closest('.thread');  // 找到当前按钮所在的 thread 容器
-      const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
+    const thread = button.closest('.thread');  // 找到当前按钮所在的 thread 容器
   
-      // 检查当前是否展开
-      if (thread.classList.contains('expanded')) {
-        // 如果已展开，则收起
-        thread.classList.remove('expanded');
-        button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
-      } else {
-        // 如果未展开，则展开
-        thread.classList.add('expanded');
-        button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
-      }
+    // 检查当前是否展开
+    if (thread.classList.contains('expanded')) {
+      // 如果已展开，则收起
+      thread.classList.remove('expanded');
+      button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
+    } else {
+      // 如果未展开，则展开
+      thread.classList.add('expanded');
+      button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
     }
+  }
   </script>
 
   <script>
