@@ -45,5 +45,14 @@
 
   <hr>
   <p><em>终端日志仅供记录，不代表官方立场。</em></p>
+  
+  <script>
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("keydown", e => {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </body>
 </html>
