@@ -72,9 +72,8 @@
         thread.classList.remove('expanded');
         button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
         threadItems.forEach((item, index) => {
-          // 保持第一个消息可见，其他消息隐藏
-          if (index !== 0) {
-            item.style.display = 'none';  // 隐藏其他 thread-item
+          if (index !== 0) {  // 始终保持第一个消息显示，其他消息隐藏
+            item.style.display = 'none';
           }
         });
       } else {
