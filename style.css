@@ -76,31 +76,37 @@ video {
   margin-bottom: 1.5em;
 }
 
-/* ✅ 显示时间戳 + 下方竖线 */
+/* —— 1. 让 .timestamp 只包裹文字宽度 —— */
 .timestamp {
+  display: inline-block;    /* 关键：不再占满整行，而是“紧包文字”的宽度 */
   font-size: 0.85em;
   color: #66ff66;
-  position: relative;
+  position: relative;       /* 让伪元素 ::after 用它作定位参考 */
   z-index: 1;
 }
 
+/* —— 2. 竖线紧贴在文字末尾 —— */
 .timestamp::after {
   content: "";
   position: absolute;
-  left: 50%;
-  top: 100%;
-  transform: translateX(-50%);
+  left: 100%;               /* 让竖线紧贴在文字宽度的最右边 */
+  top: 100%;                /* 从文字底部开始画 */
   width: 2px;
-  height: calc(100% + 0.5em);
+  height: calc(100% + 0.5em);/* 竖线从此往下延伸到内容前 */}
   background-color: #33ff33;
-  z-index: 0;
+  z-index: 0;               /* 放在文字后面 */
 }
 
-/* ✅ 让时间和内容间隔，露出竖线 */
+/* —— 3. 让内容（文字/视频）下移露出竖线 —— */
 .thread-item p,
 .thread-item video {
-  margin-top: 1em;
+  margin-top: 1em;          /* 让视频和文字与时间元素保持距离，露出竖线 */
   color: #33ff33;
+}
+
+/* —— 4. 如果“最后更新”这一行带了.extra-update 类，则不画竖线 —— */
+.timestamp.extra-update::after {
+  display: none;
 }
 
 /* ✅ 展开按钮样式保持不变 */
