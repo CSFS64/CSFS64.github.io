@@ -47,20 +47,6 @@
 
   <hr>
   <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
-
-  <p>本站访问量：<span id="counter">加载中...</span></p>
-
-  <script>
-    fetch('https://api.countapi.xyz/hit/frontline-terminal.com/visits')  <!-- 使用 countapi 统计访问量 -->
-      .then(response => response.json())  <!-- 解析 JSON 响应 -->
-      .then(data => {
-        document.getElementById('counter').textContent = data.value;  <!-- 将访问量显示在页面上 -->
-      })
-      .catch(err => {
-        console.error('Error:', err);  <!-- 错误处理 -->
-        document.getElementById('counter').textContent = "无法加载访问量";
-      });
-  </script>
   
   <script>
     // 页面加载时默认显示第一个消息
