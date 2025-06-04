@@ -52,16 +52,18 @@
     function expandThread(button) {
     const thread = button.closest('details');  // 找到当前按钮所在的 details 容器
     const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
-  
+    
     // 检查当前是否展开
     if (thread.classList.contains('expanded')) {
       // 如果已展开，则收起
       thread.classList.remove('expanded');
       button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
+      threadItems.forEach(item => item.style.display = 'none');  // 隐藏所有 thread-item
     } else {
       // 如果未展开，则展开
       thread.classList.add('expanded');
       button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
+      threadItems.forEach(item => item.style.display = 'block');  // 显示所有 thread-item
     }
   }
   </script>
