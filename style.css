@@ -80,10 +80,33 @@ video {
   margin-top: 0.5em;
 }
 
-details.thread-collapsible summary {
+.thread-item {
+  display: none; /* 默认隐藏所有 */
+}
+
+/* 第一个 thread-item 显示出来 */
+.thread-item:first-child {
+  display: block;
+}
+
+.thread.expanded .thread-item {
+  display: block;
+}
+
+button.expand-thread {
   margin-top: 1em;
   margin-left: 1em;
+  background-color: transparent;
   color: #33ff33;
+  border: 1px solid #33ff33;
+  padding: 0.3em 0.8em;
+  font-family: inherit;
   cursor: pointer;
 }
+
+button.expand-thread:hover {
+  background-color: #33ff33;
+  color: black;
+}
+
 }
