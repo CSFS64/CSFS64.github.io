@@ -119,18 +119,21 @@ button.expand-thread:hover {
 }
 
 /* —— iframe 视频样式 —— */
+/* —— iframe 视频样式 —— */
 iframe {
   width: 100%;              /* 宽度自适应父容器 */
   max-width: 640px;         /* 最大宽度 640px */
-  height: 360px;            /* 固定高度，保持宽高比 */
+  height: auto;             /* 高度自动根据宽度调整 */
   border: 2px solid #33ff33; /* 边框样式 */
   display: block;           /* 让 iframe 占据块级元素 */
   margin: 1em auto;         /* 居中显示，且与其他内容有间隔 */
+  aspect-ratio: 16 / 9;     /* 保持 16:9 宽高比 */
 }
 
 /* —— 响应式：调整手机端显示 —— */
 @media (max-width: 768px) {
   iframe {
-    height: 315px;         /* 高度调整，确保适应小屏 */
+    max-width: 100%;         /* 使视频宽度在手机端自适应 */
+    height: auto;            /* 高度自适应 */
   }
 }
