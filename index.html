@@ -49,9 +49,9 @@
   <p><em>终端日志仅供记录，不代表官方立场。</em></p>
 
   <script>
-    // 展开/收起功能
     function expandThread(button) {
-    const thread = button.closest('.thread');  // 找到当前按钮所在的 thread 容器
+    const thread = button.closest('details');  // 找到当前按钮所在的 details 容器
+    const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
   
     // 检查当前是否展开
     if (thread.classList.contains('expanded')) {
