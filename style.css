@@ -92,11 +92,11 @@ video {
 }
 
 .thread-separator {
-  font-size: 2em;
+  font-size: 4em;
   color: #33ff33; /* 设置竖线的颜色 */
-  margin-left: 0.5em
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-left: 1em
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 /* —— 换行控制 —— */
