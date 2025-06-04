@@ -85,14 +85,14 @@ video {
   margin-top: 0.5em;
 }
 
-/* 默认隐藏 thread-item */
+/* 默认隐藏所有 thread-item */
 .thread-item {
-  display: none; /* 默认隐藏所有 */
+  display: none;
 }
 
-/* 当 .expanded 类被添加时，显示所有 .thread-item */
+/* 展开后显示所有 thread-item */
 .thread.expanded .thread-item {
-  display: block; /* 展开时显示 */
+  display: block;
 }
 
 /* 展开按钮样式 */
