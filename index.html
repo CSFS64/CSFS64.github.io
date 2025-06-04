@@ -4,17 +4,45 @@
   <meta charset="UTF-8">
   <title>前线终端日志</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+    function loadContent(id, path) {
+      const container = document.getElementById(id);
+      // 如果已加载就不重复加载
+      if (container.dataset.loaded === "true") return;
+
+      fetch(path)
+        .then(response => response.text())
+        .then(html => {
+          container.innerHTML = html;
+          container.dataset.loaded = "true";
+        })
+        .catch(err => {
+          container.innerHTML = "<p>⚠️ 加载失败。</p>";
+        });
+    }
+  </script>
 </head>
 <body>
   <h1>📡 前线终端日志</h1>
   <p class="timestamp">最后更新：2025-06-03</p>
 
-  <ul class="date-list">
-    <li><a href="days/2025-06-03.html">📅 2025-06-03（星期二）</a></li>
-    <li><a href="days/2025-06-02.html">📅 2025-06-02（星期一）</a></li>
-  </ul>
+  <!-- 日期一 -->
+  <details onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">
+    <summary>📅 2025-06-03（星期二）</summary>
+    <div id="day-2025-06-03" data-loaded="false">
+      <p>加载中...</p>
+    </div>
+  </details>
+
+  <!-- 日期二 -->
+  <details onclick="loadContent('day-2025-06-02', 'days/2025-06-02.html')">
+    <summary>📅 2025-06-02（星期一）</summary>
+    <div id="day-2025-06-02" data-loaded="false">
+      <p>加载中...</p>
+    </div>
+  </details>
 
   <hr>
-  <p><em>终端日志仅供信息记录，非官方战报。</em></p>
+  <p><em>终端日志仅供记录，不代表官方立场。</em></p>
 </body>
 </html>
