@@ -1,1 +1,70 @@
+body {
+  background-color: black;
+  color: #00ff00;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 2em;
+  line-height: 1.6;
+}
 
+h1, h2, h3 {
+  color: #00ff00;
+}
+
+ul.date-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul.date-list li {
+  margin-bottom: 0.5em;
+}
+
+a {
+  color: #00ff00;
+  text-decoration: underline;
+}
+
+a:hover {
+  background-color: #00ff00;
+  color: black;
+}
+
+details {
+  border: 1px solid #00ff00;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 5px;
+  background-color: rgba(0, 255, 0, 0.05);
+}
+
+summary {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+video {
+  width: 100%;
+  max-width: 640px;
+  border: 2px solid #00ff00;
+  margin-top: 0.5em;
+}
+
+.timestamp {
+  font-size: 0.85em;
+  color: #66ff66;
+  margin-bottom: 0.5em;
+}
+
+.tag {
+  display: inline-block;
+  border: 1px solid #00ff00;
+  padding: 2px 6px;
+  margin-right: 6px;
+  font-size: 0.9em;
+  border-radius: 3px;
+}
+
+.content-block {
+  margin-left: 1em;
+  margin-top: 0.5em;
+}
