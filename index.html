@@ -48,6 +48,16 @@
   <hr>
   <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
 
+  <p>本站访问量：<span id="counter">加载中...</span></p>
+
+  <script>
+    fetch('https://api.countapi.xyz/hit/frontline-terminal.yourdomain.com/visits')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('counter').textContent = data.value;
+      });
+  </script>
+
   <script>
     // 页面加载时默认显示第一个消息
     document.addEventListener("DOMContentLoaded", function () {
