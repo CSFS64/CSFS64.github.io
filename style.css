@@ -126,7 +126,6 @@ iframe {
   height: auto;             /* 高度自动根据宽度调整 */
   border: 2px solid #33ff33; /* 边框样式 */
   display: block;           /* 让 iframe 占据块级元素 */
-  margin: 1em auto;         /* 居中显示，且与其他内容有间隔 */
   aspect-ratio: 16 / 9;     /* 保持 16:9 宽高比 */
 }
 
