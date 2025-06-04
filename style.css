@@ -7,15 +7,14 @@ body {
     transparent 1px,
     transparent 2px
   );
+  color: #00ff00;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 2em;
+  line-height: 1.6;
 }
 
 body, p {
   color: #00ff00;
-}
-
-details > summary:hover {
-  background-color: #00ff00;
-  color: black;
 }
 
 h1, h2, h3 {
@@ -49,9 +48,18 @@ details {
   background-color: rgba(0, 255, 0, 0.05);
 }
 
-summary {
-  font-weight: bold;
+details > summary {
   cursor: pointer;
+  padding: 0.2em 0.4em;
+  display: inline-block;
+  font-weight: bold;
+  background-color: transparent;
+  color: #00ff00;
+}
+
+details > summary:hover {
+  background-color: #00ff00;
+  color: black;
 }
 
 video {
@@ -67,30 +75,7 @@ video {
   margin-bottom: 0.5em;
 }
 
-.tag {
-  display: inline-block;
-  border: 1px solid #00ff00;
-  padding: 2px 6px;
-  margin-right: 6px;
-  font-size: 0.9em;
-  border-radius: 3px;
-}
-
 .content-block {
   margin-left: 1em;
   margin-top: 0.5em;
-}
-
-details > summary {
-  cursor: pointer;
-  padding: 0.2em 0.4em;
-  display: inline-block;
-  font-weight: bold;
-  background-color: transparent;
-  color: #00ff00;
-}
-
-details > summary:hover {
-  background-color: #00ff00;
-  color: black;
 }
