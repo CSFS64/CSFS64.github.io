@@ -54,6 +54,11 @@
         e.preventDefault();
       }
     });
+    function expandThread(button) {
+    const thread = button.previousElementSibling;
+    thread.classList.add('expanded');
+    button.remove(); // 展开后移除按钮
+    }
   </script>
 </body>
 </html>
