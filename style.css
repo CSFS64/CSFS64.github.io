@@ -85,21 +85,17 @@ video {
   margin-top: 0.5em;
 }
 
-/* —— 线程项的隐藏与显示 —— */
+/* 默认隐藏 thread-item */
 .thread-item {
   display: none; /* 默认隐藏所有 */
 }
 
-/* 第一个 thread-item 显示出来 */
-.thread-item:first-child {
-  display: block;
-}
-
+/* 当 .expanded 类被添加时，显示所有 .thread-item */
 .thread.expanded .thread-item {
-  display: block;
+  display: block; /* 展开时显示 */
 }
 
-/* —— 展开按钮样式 —— */
+/* 展开按钮样式 */
 button.expand-thread {
   margin-top: 1em;
   margin-left: 1em;
