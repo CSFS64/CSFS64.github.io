@@ -85,6 +85,18 @@ video {
   margin-top: 0.5em;
 }
 
+/* —— 正文部分 —— */
+.content-block p {
+  margin-bottom: 1.5em; /* 段落之间的空行 */
+  line-height: 1.6;      /* 行间距，确保文本不至于挤在一起 */
+}
+
+/* —— 换行控制 —— */
+.content-block br {
+  display: block;        /* 确保 <br> 标签能真正换行 */
+  margin-bottom: 0.5em;  /* 可选：控制换行后的间距 */
+}
+
 /* 默认隐藏所有 thread-item */
 /* 默认隐藏所有 thread-item */
 .thread-item {
