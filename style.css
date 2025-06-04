@@ -74,8 +74,8 @@ video {
 
 /* —— 插入的图片样式 —— */
 .separator-image {
-  width: 20px;              /* 设置图片宽度 */
-  height: 20px;             /* 设置图片高度 */
+  width: 100%;              /* 宽度自适应父容器 */
+  height: auto;             /* 高度自动调整，保持比例 */
   vertical-align: middle;   /* 确保图片与时间戳垂直居中对齐 */
   margin-right: 10px;       /* 图片和正文之间留一些间距 */
 }
@@ -147,7 +147,6 @@ button.expand-thread:hover {
   color: black;
 }
 
-/* —— iframe 视频样式 —— */
 /* —— iframe 视频样式 —— */
 iframe {
   width: 100%;              /* 宽度自适应父容器 */
