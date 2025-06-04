@@ -45,6 +45,14 @@
 
   <hr>
   <p><em>终端日志仅供记录，不代表官方立场。</em></p>
+
+  <script>
+  function expandThread(button) {
+    const thread = button.previousElementSibling;
+    thread.classList.add('expanded');
+    button.remove(); // 展开后移除按钮
+  }
+  </script>
   
   <script>
     document.addEventListener("dblclick", e => e.preventDefault());
@@ -54,11 +62,6 @@
         e.preventDefault();
       }
     });
-    function expandThread(button) {
-    const thread = button.previousElementSibling;
-    thread.classList.add('expanded');
-    button.remove(); // 展开后移除按钮
-    }
   </script>
 </body>
 </html>
