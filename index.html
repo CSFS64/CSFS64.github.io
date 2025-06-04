@@ -6,9 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <script>
+    // 动态加载内容函数
     function loadContent(id, path) {
       const container = document.getElementById(id);
 
+      // 如果已经加载过内容，不再重新加载
       if (container.dataset.loaded === "true") return;
 
       fetch(path)
@@ -28,16 +30,16 @@
   <p class="timestamp_lastupdate">最后更新：2025-06-03</p>
 
   <!-- 日期一 -->
-  <details onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">
-    <summary>📅 2025-06-03（星期二）</summary>
+  <details>
+    <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
     <div id="day-2025-06-03" data-loaded="false">
       <p>加载中...</p>
     </div>
   </details>
 
   <!-- 日期二 -->
-  <details onclick="loadContent('day-2025-06-02', 'days/2025-06-02.html')">
-    <summary>📅 2025-06-02（星期一）</summary>
+  <details>
+    <summary onclick="loadContent('day-2025-06-02', 'days/2025-06-02.html')">📅 2025-06-02（星期一）</summary>
     <div id="day-2025-06-02" data-loaded="false">
       <p>加载中...</p>
     </div>
@@ -47,24 +49,26 @@
   <p><em>终端日志仅供记录，不代表官方立场。</em></p>
 
   <script>
-  function expandThread(button) {
-    const thread = button.closest('.thread');  // 找到当前按钮所在的 thread 容器
-    const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
+    // 展开/收起功能
+    function expandThread(button) {
+      const thread = button.closest('.thread');  // 找到当前按钮所在的 thread 容器
+      const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
   
-    // 检查当前是否展开
-    if (thread.classList.contains('expanded')) {
-      // 如果已展开，则收起
-      thread.classList.remove('expanded');
-      button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
-    } else {
-      // 如果未展开，则展开
-      thread.classList.add('expanded');
-      button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
+      // 检查当前是否展开
+      if (thread.classList.contains('expanded')) {
+        // 如果已展开，则收起
+        thread.classList.remove('expanded');
+        button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
+      } else {
+        // 如果未展开，则展开
+        thread.classList.add('expanded');
+        button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
+      }
     }
-  }
   </script>
-  
+
   <script>
+    // 禁用双击和右键菜单
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
     document.addEventListener("keydown", e => {
