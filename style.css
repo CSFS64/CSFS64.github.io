@@ -69,12 +69,13 @@ video {
   margin-top: 0.5em;
 }
 
-details > summary:hover {
-  background-color: #003300;
-  transition: background-color 0.2s ease;
-}
-
 details > summary {
   cursor: pointer;
   padding: 0.2em 0.4em;
+  display: inline-block;
+}
+
+details > summary:hover {
+  background-color: #00ff00;
+  color: black;
 }
