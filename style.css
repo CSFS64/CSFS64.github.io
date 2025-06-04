@@ -72,6 +72,14 @@ video {
   margin-top: 0.5em;
 }
 
+/* —— 插入的图片样式 —— */
+.separator-image {
+  width: 20px;              /* 设置图片宽度 */
+  height: 20px;             /* 设置图片高度 */
+  vertical-align: middle;   /* 确保图片与时间戳垂直居中对齐 */
+  margin-right: 10px;       /* 图片和正文之间留一些间距 */
+}
+
 /* —— 时间戳样式 —— */
 .timestamp {
   font-size: 0.85em;
@@ -91,6 +99,7 @@ video {
   line-height: 1.6;      /* 行间距，确保文本不至于挤在一起 */
 }
 
+/* —— 分割线样式 —— */
 .thread-separator {
   font-size: 4em;
   color: #33ff33; /* 设置竖线的颜色 */
