@@ -73,6 +73,9 @@ details > summary {
   cursor: pointer;
   padding: 0.2em 0.4em;
   display: inline-block;
+  font-weight: bold;
+  background-color: transparent;
+  color: #00ff00;
 }
 
 details > summary:hover {
