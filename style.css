@@ -76,12 +76,12 @@ video {
 .separator-image {
   width: 100%;
   max-width: 640px;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  border: 2px solid #33ff33;
-  vertical-align: middle;
-  margin-right: 10px;
+  aspect-ratio: 16 / 9;      /* 保持16:9容器比例 */
+  object-fit: cover;         /* 裁剪多余部分，居中填满容器 */
+  height: auto;              /* 现代浏览器中可配合 aspect-ratio 使用 */
   display: block;
+  border: 2px solid #33ff33;
+  margin-right: 10px;
 }
 
 /* —— 放大图片样式 —— */
