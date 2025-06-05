@@ -68,6 +68,11 @@
   <p class="timestamp_lastupdate" style="cursor: pointer;">最后更新：加载中...</p>
 
   <details>
+    <summary onclick="loadContent('day-2025-06-05', 'days/2025-06-05.html')">📅 2025-06-05（星期四）</summary>
+    <div id="day-2025-06-05" data-loaded="false"><p>加载中...</p></div>
+  </details>
+
+  <details>
     <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
     <div id="day-2025-06-04" data-loaded="false"><p>加载中...</p></div>
   </details>
@@ -156,8 +161,8 @@
         const todayDetails = document.querySelector("details");
         todayDetails.open = true;
 
-        loadContent('day-2025-06-04', 'days/2025-06-04.html', () => {
-          const container = document.getElementById('day-2025-06-04');
+        loadContent('day-2025-06-05', 'days/2025-06-05.html', () => {
+          const container = document.getElementById('day-2025-06-05');
           markLatestThread(container);
 
           setTimeout(() => {
