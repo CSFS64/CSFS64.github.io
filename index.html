@@ -7,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <script>
-    // 动态加载内容函数
     function loadContent(id, path) {
       const container = document.getElementById(id);
       if (container.dataset.loaded === "true") return;
@@ -17,6 +16,18 @@
         .then(html => {
           container.innerHTML = html;
           container.dataset.loaded = "true";
+
+          // 自动隐藏除第一条外的 thread-item
+          const threadContainers = container.querySelectorAll('.thread');
+          threadContainers.forEach(thread => {
+            const threadItems = thread.querySelectorAll('.thread-item');
+            if (threadItems.length > 0) {
+              threadItems[0].style.display = 'block';
+              threadItems.forEach((item, index) => {
+                if (index > 0) item.style.display = 'none';
+              });
+            }
+          });
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
@@ -29,24 +40,18 @@
   <p class="timestamp_lastupdate">最后更新：加载中...</p>
 
   <details>
-    <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
-    <div id="day-2025-06-04" data-loaded="false">
-      <p>加载中...</p>
-    </div>
+    <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三） 🎞️ 国家安全局发布“蛛网”行动完整镜头</summary>
+    <div id="day-2025-06-04" data-loaded="false"><p>加载中...</p></div>
   </details>
 
   <details>
     <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
-    <div id="day-2025-06-03" data-loaded="false">
-      <p>加载中...</p>
-    </div>
+    <div id="day-2025-06-03" data-loaded="false"><p>加载中...</p></div>
   </details>
 
   <details>
     <summary onclick="loadContent('day-2025-06-02', 'days/2025-06-02.html')">📅 2025-06-02（暂时不要点，会出bug）</summary>
-    <div id="day-2025-06-02" data-loaded="false">
-      <p>加载中...</p>
-    </div>
+    <div id="day-2025-06-02" data-loaded="false"><p>加载中...</p></div>
   </details>
 
   <hr>
@@ -74,10 +79,28 @@
               container.innerHTML = html;
               container.dataset.loaded = "true";
 
+              // 隐藏除第一条 thread-item
+              const threadContainers = container.querySelectorAll('.thread');
+              threadContainers.forEach(thread => {
+                const threadItems = thread.querySelectorAll('.thread-item');
+                if (threadItems.length > 0) {
+                  threadItems[0].style.display = 'block';
+                  threadItems.forEach((item, index) => {
+                    if (index > 0) item.style.display = 'none';
+                  });
+                }
+              });
+
+              // 提取日期
               const dateMatch = summary.textContent.match(/\d{4}-\d{2}-\d{2}/);
               const latestDate = dateMatch ? dateMatch[0] : "未知日期";
-              const eventTitle = summary.textContent.trim();
 
+              // 提取标题（去掉日期与星期）
+              const rawText = summary.textContent.trim();
+              let title = rawText.replace(/^📅\s*\d{4}-\d{2}-\d{2}（.*?）\s*/, '').trim();
+              if (!title) title = '[无标题]';
+
+              // 虚拟 DOM 提取最后 thread-item 的前6字
               const tempDiv = document.createElement("div");
               tempDiv.innerHTML = html;
               const threadItems = tempDiv.querySelectorAll(".thread-item");
@@ -86,30 +109,16 @@
               if (threadItems.length > 0) {
                 const lastThread = threadItems[threadItems.length - 1];
                 const p = lastThread.querySelector("p");
-                if (p) {
-                  previewText = p.textContent.trim().slice(0, 6);
-                }
+                if (p) previewText = p.textContent.trim().slice(0, 6);
               }
 
-              updateElement.textContent = `最后更新：${latestDate} ${eventTitle}（${previewText}...）`;
+              updateElement.textContent = `最后更新：${latestDate} ${title} ${previewText}...`;
             })
             .catch(() => {
               updateElement.textContent = "最后更新：⚠️ 获取失败";
             });
         }
       }
-
-      // 默认显示所有 .thread 的第一个 .thread-item
-      const threads = document.querySelectorAll('.thread');
-      threads.forEach(thread => {
-        const threadItems = thread.querySelectorAll('.thread-item');
-        if (threadItems.length > 0) {
-          threadItems[0].style.display = 'block';
-          threadItems.forEach((item, index) => {
-            if (index > 0) item.style.display = 'none';
-          });
-        }
-      });
     });
 
     function expandThread(button) {
@@ -156,7 +165,6 @@
   </script>
 
   <script>
-    // 禁用右键、F12、开发者工具快捷键
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
     document.addEventListener("keydown", e => {
