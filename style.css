@@ -74,6 +74,7 @@ video {
 
 /* —— 图片样式 —— */
 .separator-image {
+  cursor: pointer;
   width: 100%;
   max-width: 640px;
   aspect-ratio: 16 / 9;      /* 保持16:9容器比例 */
