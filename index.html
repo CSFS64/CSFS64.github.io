@@ -93,6 +93,27 @@
   </script>
 
   <script>
+    document.querySelectorAll('.separator-image').forEach(img => {
+      img.addEventListener('click', function () {
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-image');
+        modal.style.display = 'flex';
+        modalImg.src = this.src;
+      });
+    });
+  
+    function closeModal() {
+      document.getElementById('image-modal').style.display = 'none';
+    }
+  
+    document.addEventListener('keydown', function (e) {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    });
+  </script>
+
+  <script>
     // 禁用双击和右键菜单
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
