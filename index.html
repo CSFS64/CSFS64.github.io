@@ -10,7 +10,7 @@
     function loadContent(id, path, callback) {
       const container = document.getElementById(id);
       if (container.dataset.loaded === "true") {
-        if (callback) callback();
+        if (callback) requestAnimationFrame(() => callback());
         return;
       }
 
@@ -31,25 +31,26 @@
             }
           });
 
-          // 找出当天最新的 thread-item 并加上 id
-          let latestMinutes = -1;
-          let latestItem = null;
-          container.querySelectorAll(".thread-item").forEach(item => {
-            const raw = item.querySelector(".timestamp")?.textContent || "";
-            const match = raw.match(/(\d{1,2}):(\d{2})/);
-            if (match) {
-              const min = parseInt(match[1]) * 60 + parseInt(match[2]);
-              if (min > latestMinutes) {
-                latestMinutes = min;
-                latestItem = item;
+          requestAnimationFrame(() => {
+            let latestMinutes = -1;
+            let latestItem = null;
+            container.querySelectorAll(".thread-item").forEach(item => {
+              const raw = item.querySelector(".timestamp")?.textContent || "";
+              const match = raw.match(/(\d{1,2}):(\d{2})/);
+              if (match) {
+                const min = parseInt(match[1]) * 60 + parseInt(match[2]);
+                if (min > latestMinutes) {
+                  latestMinutes = min;
+                  latestItem = item;
+                }
               }
+            });
+            if (latestItem) {
+              latestItem.setAttribute("id", "latest-thread");
             }
-          });
-          if (latestItem) {
-            latestItem.setAttribute("id", "latest-thread");
-          }
 
-          if (callback) callback();
+            if (callback) callback();
+          });
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
@@ -97,20 +98,6 @@
           container.innerHTML = html;
           container.dataset.loaded = "true";
 
-          const threadContainers = container.querySelectorAll('.thread');
-          threadContainers.forEach(thread => {
-            const threadItems = thread.querySelectorAll('.thread-item');
-            if (threadItems.length > 0) {
-              threadItems[0].style.display = 'block';
-              threadItems.forEach((item, index) => {
-                if (index > 0) item.style.display = 'none';
-              });
-            }
-          });
-
-          const dateMatch = summary.textContent.match(/\d{4}-\d{2}-\d{2}/);
-          const latestDate = dateMatch ? dateMatch[0] : "未知日期";
-
           const tempDiv = document.createElement("div");
           tempDiv.innerHTML = html;
 
@@ -138,6 +125,8 @@
             });
           });
 
+          const dateMatch = summary.textContent.match(/\d{4}-\d{2}-\d{2}/);
+          const latestDate = dateMatch ? dateMatch[0] : "未知日期";
           updateElement.textContent = `最后更新（点击跳转）：${latestDate} ${latestEventTitle}：${latestText}...`;
         })
         .catch(() => {
@@ -145,7 +134,6 @@
         });
     });
 
-    // 点击“最后更新”
     document.addEventListener("click", function (e) {
       if (e.target.classList.contains("timestamp_lastupdate")) {
         const updateEl = e.target;
@@ -170,13 +158,17 @@
 
         loadContent('day-2025-06-04', 'days/2025-06-04.html', () => {
           const container = document.getElementById('day-2025-06-04');
-          const allSubDetails = container.querySelectorAll("details");
 
-          allSubDetails.forEach(detail => {
-            const summary = detail.querySelector("summary");
-            if (!detail.open && summary) summary.click();
-            const expandBtn = detail.querySelector(".expand-thread");
-            if (expandBtn && !detail.classList.contains("expanded")) expandBtn.click();
+          const threads = container.querySelectorAll('.thread');
+          threads.forEach(thread => {
+            const items = thread.querySelectorAll('.thread-item');
+            items.forEach(item => item.style.display = "block");
+
+            const expandBtn = thread.querySelector(".expand-thread");
+            if (expandBtn && !thread.classList.contains("expanded")) {
+              thread.classList.add("expanded");
+              expandBtn.textContent = "📚 收起";
+            }
           });
 
           setTimeout(() => {
@@ -192,11 +184,10 @@
       }
     });
 
-    // 展开/收起
     document.addEventListener("click", function (e) {
       if (e.target.classList.contains("expand-thread")) {
         const button = e.target;
-        const thread = button.closest("details");
+        const thread = button.closest("details, .thread");
         const threadItems = thread.querySelectorAll(".thread-item");
 
         if (thread.classList.contains("expanded")) {
