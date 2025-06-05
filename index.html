@@ -175,6 +175,10 @@
               const expandBtn = thread.querySelector(".expand-thread");
               if (expandBtn) {
                 expandBtn.click();
+
+                expandBtn.textContent = "📚 收起";
+                expandBtn.dataset.expanded = "true";
+                thread.classList.add("expanded");
               }
             
               // ✅ 确保内容也被展开（即便按钮逻辑没写完整，也兜底）
