@@ -92,6 +92,11 @@
     }
   </script>
 
+  <!-- 放在 </body> 前 -->
+  <div id="image-modal" class="modal" onclick="closeModal()">
+    <img id="modal-image" class="modal-image" src="">
+  </div>
+
   <!-- 用事件委托方式绑定点击图片放大 -->
   <script>
     // 委托监听：只要点击的元素是 .separator-image 就执行放大
