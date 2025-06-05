@@ -72,27 +72,21 @@
             const li = document.createElement('li');
             li.innerHTML = `<a href="#${anchorId}">${text}</a>`;
             li.querySelector('a').addEventListener('click', () => {
-              const detail = container.closest('details');
-              detail.open = true;
-              document.getElementById(anchorId).scrollIntoView({ behavior: 'smooth' });
+              expandAndScroll(id, anchorId, '');
             });
             updateList.appendChild(li);
           });
 
-          // 找到最新事件和最后一个 thread-item
           const firstSummary = temp.querySelector('summary');
           const allThreads = temp.querySelectorAll('.thread');
           if (firstSummary && allThreads.length > 0) {
-            const lastThread = allThreads[0].querySelectorAll('.thread-item');
-            const last = lastThread[lastThread.length - 1];
+            const threadItems = allThreads[0].querySelectorAll('.thread-item');
+            const last = threadItems[threadItems.length - 1];
             const previewText = (last.textContent || '').trim().slice(0, 6);
-            const logSummary = document.getElementById('latest-update-summary');
-            logSummary.innerHTML = `<a href="#" onclick="expandAndScroll('${id}', '${firstSummary.id}', '${last.id || ''}')">📢 最新更新：${firstSummary.textContent.trim()}：${previewText}...</a>`;
+            if (!last.id) last.id = `${firstSummary.id}-latest-thread`;
 
-            // 给最后一个 thread-item 添加 ID（如果没有）
-            if (!last.id) {
-              last.id = `${firstSummary.id}-latest-thread`;
-            }
+            const logSummary = document.getElementById('latest-update-summary');
+            logSummary.innerHTML = `<a href="#" onclick="expandAndScroll('${id}', '${firstSummary.id}', '${last.id}')">📢 最新更新：${firstSummary.textContent.trim()}：${previewText}...</a>`;
           }
         })
         .catch(() => {
@@ -101,24 +95,27 @@
     }
 
     function expandAndScroll(dayId, summaryId, threadId) {
-      const dayDetails = document.getElementById(dayId).closest('details');
-      dayDetails.open = true;
       loadContent(dayId, `days/${dayId.replace('day-', '')}.html`);
 
       setTimeout(() => {
-        const summary = document.getElementById(summaryId);
-        if (summary) {
-          summary.click();
-          setTimeout(() => {
-            const expandBtn = summary.parentElement.querySelector('.expand-thread');
-            if (expandBtn) expandBtn.click();
-            if (threadId) {
-              const thread = document.getElementById(threadId);
-              if (thread) thread.scrollIntoView({ behavior: 'smooth' });
-            }
-          }, 300);
-        }
-      }, 300);
+        const dayDetails = document.getElementById(dayId).closest('details');
+        dayDetails.open = true;
+
+        setTimeout(() => {
+          const summary = document.getElementById(summaryId);
+          if (summary) {
+            summary.click();
+            setTimeout(() => {
+              const expandBtn = summary.parentElement.querySelector('.expand-thread');
+              if (expandBtn) expandBtn.click();
+              if (threadId) {
+                const thread = document.getElementById(threadId);
+                if (thread) thread.scrollIntoView({ behavior: 'smooth' });
+              }
+            }, 300);
+          }
+        }, 300);
+      }, 500);
     }
 
     document.addEventListener("DOMContentLoaded", function () {
