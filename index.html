@@ -17,7 +17,6 @@
           container.innerHTML = html;
           container.dataset.loaded = "true";
 
-          // 自动隐藏除第一条外的 thread-item
           const threadContainers = container.querySelectorAll('.thread');
           threadContainers.forEach(thread => {
             const threadItems = thread.querySelectorAll('.thread-item');
@@ -40,11 +39,7 @@
   <p class="timestamp_lastupdate">最后更新：加载中...</p>
 
   <details>
-    <summary 
-      onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')" 
-      data-title="🎞️ 国家安全局发布“蛛网”行动完整镜头">
-      📅 2025-06-04（星期三）
-    </summary>
+    <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三 ）</summary>
     <div id="day-2025-06-04" data-loaded="false"><p>加载中...</p></div>
   </details>
 
@@ -66,79 +61,91 @@
       const updateElement = document.querySelector(".timestamp_lastupdate");
       const allDetails = document.querySelectorAll("details");
 
-      if (allDetails.length > 0) {
-        const latestDetails = allDetails[0];
-        const summary = latestDetails.querySelector("summary");
-        const onclick = summary.getAttribute("onclick");
-        const match = onclick.match(/loadContent\(['"](.+?)['"]\s*,\s*['"](.+?)['"]\)/);
+      if (allDetails.length === 0) return;
 
-        if (match) {
-          const divId = match[1];
-          const htmlPath = match[2];
+      const latestDetails = allDetails[0];
+      const summary = latestDetails.querySelector("summary");
+      const onclick = summary.getAttribute("onclick");
+      const match = onclick.match(/loadContent\(['"](.+?)['"]\s*,\s*['"](.+?)['"]\)/);
 
-          fetch(htmlPath)
-            .then(response => response.text())
-            .then(html => {
-              const container = document.getElementById(divId);
-              container.innerHTML = html;
-              container.dataset.loaded = "true";
+      if (!match) return;
 
-              // 隐藏除第一条 thread-item
-              const threadContainers = container.querySelectorAll('.thread');
-              threadContainers.forEach(thread => {
-                const threadItems = thread.querySelectorAll('.thread-item');
-                if (threadItems.length > 0) {
-                  threadItems[0].style.display = 'block';
-                  threadItems.forEach((item, index) => {
-                    if (index > 0) item.style.display = 'none';
-                  });
-                }
+      const divId = match[1];
+      const htmlPath = match[2];
+
+      fetch(htmlPath)
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById(divId);
+          container.innerHTML = html;
+          container.dataset.loaded = "true";
+
+          const threadContainers = container.querySelectorAll('.thread');
+          threadContainers.forEach(thread => {
+            const threadItems = thread.querySelectorAll('.thread-item');
+            if (threadItems.length > 0) {
+              threadItems[0].style.display = 'block';
+              threadItems.forEach((item, index) => {
+                if (index > 0) item.style.display = 'none';
               });
+            }
+          });
 
-              // 提取日期
-              const dateMatch = summary.textContent.match(/\d{4}-\d{2}-\d{2}/);
-              const latestDate = dateMatch ? dateMatch[0] : "未知日期";
+          const dateMatch = summary.textContent.match(/\d{4}-\d{2}-\d{2}/);
+          const latestDate = dateMatch ? dateMatch[0] : "未知日期";
 
-              // 提取标题（去掉日期与星期）
-              let title = summary.dataset.title?.trim() || '[无标题]';
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = html;
 
+          let latestTime = "00:00";
+          let latestText = "";
+          let latestEventTitle = "";
 
-              // 虚拟 DOM 提取最后 thread-item 的前6字
-              const tempDiv = document.createElement("div");
-              tempDiv.innerHTML = html;
-              const threadItems = tempDiv.querySelectorAll(".thread-item");
+          const allDetailsInHtml = tempDiv.querySelectorAll("details");
+          allDetailsInHtml.forEach(detail => {
+            const eventTitle = detail.querySelector("summary")?.textContent.replace(/\s+/g, ' ').trim() || "[未知事件]";
+            const threadItems = detail.querySelectorAll(".thread-item");
 
-              let previewText = "";
-              if (threadItems.length > 0) {
-                const lastThread = threadItems[threadItems.length - 1];
-                const p = lastThread.querySelector("p");
-                if (p) previewText = p.textContent.trim().slice(0, 6);
+            threadItems.forEach(item => {
+              const timestampDiv = item.querySelector(".timestamp");
+              const timeStr = timestampDiv?.textContent.trim() || "";
+
+              if (/^\d{1,2}:\d{2}$/.test(timeStr) && timeStr > latestTime) {
+                latestTime = timeStr;
+                const firstP = item.querySelector("p");
+                latestText = firstP?.textContent.trim().slice(0, 6) || "";
+                latestEventTitle = eventTitle;
               }
-
-              updateElement.textContent = `最后更新：${latestDate} ${title} ${previewText}...`;
-            })
-            .catch(() => {
-              updateElement.textContent = "最后更新：⚠️ 获取失败";
             });
+          });
+
+          updateElement.textContent = `最后更新：${latestDate} ${latestEventTitle} ${latestText}...`;
+        })
+        .catch(() => {
+          updateElement.textContent = "最后更新：⚠️ 获取失败";
+        });
+    });
+
+    // 用事件委托绑定“展开/收起”按钮逻辑
+    document.addEventListener("click", function (e) {
+      if (e.target.classList.contains("expand-thread")) {
+        const button = e.target;
+        const thread = button.closest("details");
+        const threadItems = thread.querySelectorAll(".thread-item");
+
+        if (thread.classList.contains("expanded")) {
+          thread.classList.remove("expanded");
+          button.textContent = "📖 展开全部";
+          threadItems.forEach((item, index) => {
+            if (index !== 0) item.style.display = "none";
+          });
+        } else {
+          thread.classList.add("expanded");
+          button.textContent = "📚 收起";
+          threadItems.forEach(item => item.style.display = "block");
         }
       }
     });
-
-    function expandThread(button) {
-      const thread = button.closest('details');
-      const threadItems = thread.querySelectorAll('.thread-item');
-      if (thread.classList.contains('expanded')) {
-        thread.classList.remove('expanded');
-        button.textContent = "📖 展开全部";
-        threadItems.forEach((item, index) => {
-          if (index !== 0) item.style.display = 'none';
-        });
-      } else {
-        thread.classList.add('expanded');
-        button.textContent = "📚 收起";
-        threadItems.forEach(item => item.style.display = 'block');
-      }
-    }
   </script>
 
   <!-- 图片放大模态框 -->
