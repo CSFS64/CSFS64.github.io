@@ -7,6 +7,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <script>
+    function markLatestThread(container) {
+      let latestMinutes = -1;
+      let latestItem = null;
+      container.querySelectorAll(".thread-item").forEach(item => {
+        const raw = item.querySelector(".timestamp")?.textContent || "";
+        const match = raw.match(/(\d{1,2}):(\d{2})/);
+        if (match) {
+          const min = parseInt(match[1]) * 60 + parseInt(match[2]);
+          if (min > latestMinutes) {
+            latestMinutes = min;
+            latestItem = item;
+          }
+        }
+      });
+      if (latestItem) {
+        latestItem.setAttribute("id", "latest-thread");
+      }
+    }
+
     function loadContent(id, path, callback) {
       const container = document.getElementById(id);
       if (container.dataset.loaded === "true") {
@@ -31,26 +50,10 @@
             }
           });
 
-          requestAnimationFrame(() => {
-            let latestMinutes = -1;
-            let latestItem = null;
-            container.querySelectorAll(".thread-item").forEach(item => {
-              const raw = item.querySelector(".timestamp")?.textContent || "";
-              const match = raw.match(/(\d{1,2}):(\d{2})/);
-              if (match) {
-                const min = parseInt(match[1]) * 60 + parseInt(match[2]);
-                if (min > latestMinutes) {
-                  latestMinutes = min;
-                  latestItem = item;
-                }
-              }
-            });
-            if (latestItem) {
-              latestItem.setAttribute("id", "latest-thread");
-            }
-
+          setTimeout(() => {
+            markLatestThread(container);
             if (callback) callback();
-          });
+          }, 0);
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
@@ -79,7 +82,6 @@
     document.addEventListener("DOMContentLoaded", function () {
       const updateElement = document.querySelector(".timestamp_lastupdate");
       const allDetails = document.querySelectorAll("details");
-
       if (allDetails.length === 0) return;
 
       const latestDetails = allDetails[0];
@@ -109,7 +111,6 @@
           allDetailsInHtml.forEach(detail => {
             const eventTitle = detail.querySelector("summary")?.textContent.trim() || "[未知事件]";
             const threadItems = detail.querySelectorAll(".thread-item");
-
             threadItems.forEach(item => {
               const rawTime = item.querySelector(".timestamp")?.textContent || "";
               const match = rawTime.match(/(\d{1,2}):(\d{2})/);
@@ -158,6 +159,7 @@
 
         loadContent('day-2025-06-04', 'days/2025-06-04.html', () => {
           const container = document.getElementById('day-2025-06-04');
+          markLatestThread(container); // 🔧 确保标记
 
           const threads = container.querySelectorAll('.thread');
           threads.forEach(thread => {
@@ -188,8 +190,7 @@
       if (e.target.classList.contains("expand-thread")) {
         const button = e.target;
         const thread = button.closest("details, .thread");
-        const threadItems = thread.querySelectorAll(".thread-item");
-
+        const threadItems = thread.querySelectorAll('.thread-item');
         if (thread.classList.contains("expanded")) {
           thread.classList.remove("expanded");
           button.textContent = "📖 展开全部";
