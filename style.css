@@ -81,6 +81,28 @@ video {
   margin-right: 10px;       /* 图片和正文之间留一些间距 */
 }
 
+/* —— 放大图片样式 —— */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-out;
+}
+
+.modal-image {
+  max-width: 90%;
+  max-height: 90%;
+  border: 2px solid #33ff33;
+  box-shadow: 0 0 20px #33ff33;
+}
+
 /* —— 时间戳样式 —— */
 .timestamp {
   font-size: 0.85em;
