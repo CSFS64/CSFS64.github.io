@@ -11,13 +11,13 @@
   <h1>📡 FRONTLINE TERMINAL</h1>
   <p class="timestamp_lastupdate">最后更新：2025-06-04</p>
 
-  <!-- 更新日志栏 -->
+  <!-- 更新日志区域 -->
   <details id="update-log" class="update-log">
     <summary>📢 最新更新：加载中...</summary>
     <ul id="update-list"></ul>
   </details>
 
-  <!-- 每日内容入口 -->
+  <!-- 每日更新区域 -->
   <details>
     <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
     <div id="day-2025-06-04" data-loaded="false">
@@ -40,14 +40,14 @@
   </details>
 
   <hr>
-  <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
+  <p><em>你可以通过在 bilibili 给我充电来支持我的工作</em></p>
 
-  <!-- 模态框图片查看器 -->
+  <!-- 图片放大模态框 -->
   <div id="image-modal" class="modal" onclick="closeModal()">
     <img id="modal-image" class="modal-image" src="">
   </div>
 
-  <!-- 脚本部分 -->
+  <!-- 脚本逻辑部分 -->
   <script>
     function loadContent(id, path) {
       const container = document.getElementById(id);
@@ -73,15 +73,16 @@
             const li = document.createElement('li');
             li.innerHTML = `<a href="#${anchorId}">${text}</a>`;
             li.querySelector('a').addEventListener('click', () => {
-              const details = container.closest('details');
-              details.open = true;
+              const detail = container.closest('details');
+              detail.open = true;
               document.getElementById(anchorId).scrollIntoView({ behavior: 'smooth' });
             });
 
             updateList.appendChild(li);
 
             if (index === 0) {
-              document.querySelector('#update-log > summary').textContent = `📢 最新更新：${text}`;
+              const logSummary = document.querySelector('#update-log > summary');
+              logSummary.textContent = `📢 最新更新：${text}`;
             }
           });
         })
@@ -91,6 +92,10 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
+      // 自动加载最新一天（手动写死）
+      loadContent("day-2025-06-04", "days/2025-06-04.html");
+
+      // 默认只显示每个 thread 的第一个 thread-item
       const threads = document.querySelectorAll('.thread');
       threads.forEach(thread => {
         const threadItems = thread.querySelectorAll('.thread-item');
@@ -103,20 +108,21 @@
 
     function expandThread(button) {
       const thread = button.closest('details');
-      const threadItems = thread.querySelectorAll('.thread-item');
+      const items = thread.querySelectorAll('.thread-item');
       if (thread.classList.contains('expanded')) {
         thread.classList.remove('expanded');
         button.textContent = "📖 展开全部";
-        threadItems.forEach((item, index) => {
+        items.forEach((item, index) => {
           if (index !== 0) item.style.display = 'none';
         });
       } else {
         thread.classList.add('expanded');
         button.textContent = "📚 收起";
-        threadItems.forEach(item => item.style.display = 'block');
+        items.forEach(item => item.style.display = 'block');
       }
     }
 
+    // 图片放大功能
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('separator-image')) {
         const modal = document.getElementById('image-modal');
@@ -131,11 +137,10 @@
     }
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === "Escape") {
-        closeModal();
-      }
+      if (e.key === "Escape") closeModal();
     });
 
+    // 禁用开发者工具等
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
     document.addEventListener("keydown", e => {
