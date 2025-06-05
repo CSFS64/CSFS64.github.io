@@ -31,6 +31,24 @@
             }
           });
 
+          // 添加 id 到最新的 thread-item
+          let latestMinutes = -1;
+          let latestItem = null;
+          container.querySelectorAll(".thread-item").forEach(item => {
+            const raw = item.querySelector(".timestamp")?.textContent || "";
+            const match = raw.match(/(\d{1,2}):(\d{2})/);
+            if (match) {
+              const min = parseInt(match[1]) * 60 + parseInt(match[2]);
+              if (min > latestMinutes) {
+                latestMinutes = min;
+                latestItem = item;
+              }
+            }
+          });
+          if (latestItem) {
+            latestItem.setAttribute("id", "latest-thread");
+          }
+
           if (callback) callback();
         })
         .catch(() => {
@@ -57,8 +75,6 @@
   <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
 
   <script>
-    let jumpTarget = null;
-
     document.addEventListener("DOMContentLoaded", function () {
       const updateElement = document.querySelector(".timestamp_lastupdate");
       const allDetails = document.querySelectorAll("details");
@@ -101,73 +117,59 @@
           let latestMinutes = -1;
           let latestText = "";
           let latestEventTitle = "";
-          let threadId = "";
 
           const allDetailsInHtml = tempDiv.querySelectorAll("details");
-          allDetailsInHtml.forEach((detail, detailIndex) => {
-            const eventTitle = detail.querySelector("summary")?.textContent.replace(/\s+/g, ' ').trim() || "[未知事件]";
+          allDetailsInHtml.forEach(detail => {
+            const eventTitle = detail.querySelector("summary")?.textContent.trim() || "[未知事件]";
             const threadItems = detail.querySelectorAll(".thread-item");
 
-            threadItems.forEach((item, threadIndex) => {
-              const timestampDiv = item.querySelector(".timestamp");
-              const rawTime = timestampDiv?.textContent.trim() || "";
+            threadItems.forEach(item => {
+              const rawTime = item.querySelector(".timestamp")?.textContent || "";
               const match = rawTime.match(/(\d{1,2}):(\d{2})/);
-
               if (match) {
-                const hours = parseInt(match[1], 10);
-                const minutes = parseInt(match[2], 10);
-                const total = hours * 60 + minutes;
-
+                const total = parseInt(match[1]) * 60 + parseInt(match[2]);
                 if (total > latestMinutes) {
                   latestMinutes = total;
                   const firstP = item.querySelector("p");
                   latestText = firstP?.textContent.trim().slice(0, 6) || "";
                   latestEventTitle = eventTitle;
-                  threadId = `jump-${latestDate}-${eventTitle}-${hours}-${minutes}`;
                 }
               }
             });
           });
 
           updateElement.textContent = `最后更新（点击跳转）：${latestDate} ${latestEventTitle}：${latestText}...`;
-          updateElement.dataset.jump = threadId;
-
         })
         .catch(() => {
           updateElement.textContent = "最后更新：⚠️ 获取失败";
         });
     });
 
-    // 点击“最后更新”跳转功能
+    // 点击“最后更新”跳转到最新 thread
     document.addEventListener("click", function (e) {
-      const target = e.target;
-      if (target.classList.contains("timestamp_lastupdate")) {
-        const jumpId = target.dataset.jump;
-        if (!jumpId) return;
-
+      if (e.target.classList.contains("timestamp_lastupdate")) {
         const firstDetails = document.querySelector("details");
         const summary = firstDetails.querySelector("summary");
-        summary.click(); // 触发展开并加载
+        summary.click();
 
         loadContent('day-2025-06-04', 'days/2025-06-04.html', () => {
           const container = document.getElementById('day-2025-06-04');
-          const detailElements = container.querySelectorAll("details");
-          detailElements.forEach(detail => {
-            const summary = detail.querySelector("summary");
-            if (!detail.open) summary.click();
+          const allSubDetails = container.querySelectorAll("details");
 
-            // 展开全文按钮
-            const btn = detail.querySelector(".expand-thread");
-            if (btn && !detail.classList.contains("expanded")) btn.click();
+          allSubDetails.forEach(detail => {
+            const summary = detail.querySelector("summary");
+            if (!detail.open && summary) summary.click();
+            const expandBtn = detail.querySelector(".expand-thread");
+            if (expandBtn && !detail.classList.contains("expanded")) expandBtn.click();
           });
 
-          const threadItem = container.querySelector(".thread-item:last-child");
-          if (threadItem) threadItem.scrollIntoView({ behavior: "smooth" });
+          const latestItem = document.getElementById("latest-thread");
+          if (latestItem) latestItem.scrollIntoView({ behavior: "smooth" });
         });
       }
     });
 
-    // 手动“展开全部”按钮功能
+    // 手动展开/收起按钮
     document.addEventListener("click", function (e) {
       if (e.target.classList.contains("expand-thread")) {
         const button = e.target;
@@ -209,9 +211,7 @@
     }
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === "Escape") {
-        closeModal();
-      }
+      if (e.key === "Escape") closeModal();
     });
 
     document.addEventListener("dblclick", e => e.preventDefault());
