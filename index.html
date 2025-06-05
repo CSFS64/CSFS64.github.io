@@ -92,14 +92,16 @@
     }
   </script>
 
+  <!-- 用事件委托方式绑定点击图片放大 -->
   <script>
-    document.querySelectorAll('.separator-image').forEach(img => {
-      img.addEventListener('click', function () {
+    // 委托监听：只要点击的元素是 .separator-image 就执行放大
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('separator-image')) {
         const modal = document.getElementById('image-modal');
         const modalImg = document.getElementById('modal-image');
         modal.style.display = 'flex';
-        modalImg.src = this.src;
-      });
+        modalImg.src = e.target.src;
+      }
     });
   
     function closeModal() {
