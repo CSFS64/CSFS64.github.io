@@ -3,64 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <title>Frontline Terminal</title>
-  <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
+  <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
   <script>
-    let jumpTargetId = null;
-
     function loadContent(id, path, callback) {
       const container = document.getElementById(id);
       if (container.dataset.loaded === "true") {
-        callback && callback();
+        if (callback) callback(container);
         return;
       }
-
       fetch(path)
         .then(response => response.text())
         .then(html => {
           container.innerHTML = html;
           container.dataset.loaded = "true";
-
-          const threadContainers = container.querySelectorAll('.thread');
-          threadContainers.forEach(thread => {
-            const threadItems = thread.querySelectorAll('.thread-item');
-            if (threadItems.length > 0) {
-              threadItems[0].style.display = 'block';
-              threadItems.forEach((item, index) => {
-                if (index > 0) item.style.display = 'none';
-              });
-            }
-          });
-
-          callback && callback();
+          if (callback) callback(container);
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
         });
     }
-  </script>
-</head>
-<body>
-  <h1>📡 FRONTLINE TERMINAL</h1>
-  <p class="timestamp_lastupdate" style="cursor: pointer; text-decoration: underline;">最后更新：加载中...</p>
 
-  <details>
-    <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
-    <div id="day-2025-06-04" data-loaded="false"><p>加载中...</p></div>
-  </details>
+    function toggleThread(thread, expand) {
+      const items = thread.querySelectorAll('.thread-item');
+      thread.classList.toggle('expanded', expand);
+      items.forEach((item, index) => {
+        item.style.display = expand || index === 0 ? 'block' : 'none';
+      });
+      const button = thread.querySelector('.expand-thread');
+      if (button) button.textContent = expand ? '📚 收起' : '📖 展开全部';
+    }
 
-  <details>
-    <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
-    <div id="day-2025-06-03" data-loaded="false"><p>加载中...</p></div>
-  </details>
-
-  <hr>
-  <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
-
-  <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const updateElement = document.querySelector(".timestamp_lastupdate");
+      const updateEl = document.querySelector(".timestamp_lastupdate");
       const allDetails = document.querySelectorAll("details");
       if (allDetails.length === 0) return;
 
@@ -74,76 +50,94 @@
       const htmlPath = match[2];
 
       fetch(htmlPath)
-        .then(response => response.text())
+        .then(r => r.text())
         .then(html => {
-          const container = document.getElementById(divId);
-          container.innerHTML = html;
-          container.dataset.loaded = "true";
-
           const tempDiv = document.createElement("div");
           tempDiv.innerHTML = html;
 
           let latestTime = "00:00";
           let latestText = "";
           let latestEventTitle = "";
-          let targetThreadId = "";
+          let latestThreadIndex = -1;
 
-          const allDetailsInHtml = tempDiv.querySelectorAll("details");
-          allDetailsInHtml.forEach((detail, dIndex) => {
-            const eventTitle = detail.querySelector("summary")?.textContent.replace(/\s+/g, ' ').trim() || "[未知事件]";
+          const allEventDetails = tempDiv.querySelectorAll("details");
+          allEventDetails.forEach(detail => {
+            const title = detail.querySelector("summary")?.textContent.trim() || "[未知事件]";
             const threadItems = detail.querySelectorAll(".thread-item");
-
-            threadItems.forEach((item, iIndex) => {
-              const timestampDiv = item.querySelector(".timestamp");
-              const rawTime = timestampDiv?.textContent.trim() || "";
+            threadItems.forEach((item, idx) => {
+              const timeDiv = item.querySelector(".timestamp");
+              const rawTime = timeDiv?.textContent.trim() || "";
               const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/);
-              if (timeMatch) {
-                const timeStr = timeMatch[0];
-                if (timeStr > latestTime) {
-                  latestTime = timeStr;
-                  const firstP = item.querySelector("p");
-                  latestText = firstP?.textContent.trim().slice(0, 6) || "";
-                  latestEventTitle = eventTitle;
-                  targetThreadId = `jump-${dIndex}-${iIndex}`;
-
-                  // 给真实 DOM 添加 ID 用于定位
-                  const realDetails = container.querySelectorAll("details")[dIndex];
-                  const realThread = realDetails?.querySelectorAll(".thread-item")[iIndex];
-                  if (realThread) realThread.id = targetThreadId;
-                }
+              if (timeMatch && timeMatch[0] > latestTime) {
+                latestTime = timeMatch[0];
+                latestText = item.querySelector("p")?.textContent.trim().slice(0, 6) || "";
+                latestEventTitle = title;
+                latestThreadIndex = idx;
               }
             });
           });
 
-          updateElement.textContent = `最后更新（点击跳转）：${divId.slice(4)} ${latestEventTitle}：${latestText}...`;
-          jumpTargetId = targetThreadId;
-        })
-        .catch(() => {
-          updateElement.textContent = "最后更新：⚠️ 获取失败";
+          updateEl.textContent = `最后更新（点击跳转）：${match[1].slice(4)} ${latestEventTitle}：${latestText}...`;
+
+          // 保存跳转信息
+          window._latestJump = {
+            containerId: divId,
+            path: htmlPath,
+            eventTitle: latestEventTitle,
+            threadIndex: latestThreadIndex
+          };
         });
 
-      // 添加点击跳转逻辑
-      updateElement.addEventListener("click", () => {
-        const detail = document.getElementById(divId)?.closest("details");
-        if (!detail.open) detail.open = true;
+      // 事件委托绑定展开/收起按钮
+      document.addEventListener("click", e => {
+        if (e.target.classList.contains("expand-thread")) {
+          const thread = e.target.closest("details").querySelector(".thread");
+          const expanded = thread.classList.contains("expanded");
+          toggleThread(thread, !expanded);
+        }
+      });
 
-        loadContent(divId, htmlPath, () => {
-          const threadItem = document.getElementById(jumpTargetId);
-          if (!threadItem) return;
+      // 点击跳转到最新 thread
+      document.querySelector(".timestamp_lastupdate").addEventListener("click", () => {
+        const info = window._latestJump;
+        if (!info) return;
 
-          // 找到所属 details 元素，展开全文
-          const detailsWrapper = threadItem.closest("details");
-          if (detailsWrapper && !detailsWrapper.classList.contains("expanded")) {
-            const expandBtn = detailsWrapper.querySelector(".expand-thread");
-            if (expandBtn) expandBtn.click();
+        const dayDetails = document.querySelector(`div#${info.containerId}`).closest("details");
+        dayDetails.open = true;
+
+        loadContent(info.containerId, info.path, container => {
+          const eventDetails = [...container.querySelectorAll("details")].find(d =>
+            d.querySelector("summary")?.textContent.trim() === info.eventTitle
+          );
+          if (!eventDetails) return;
+
+          eventDetails.open = true;
+          const thread = eventDetails.querySelector(".thread");
+          toggleThread(thread, true);
+          const items = thread.querySelectorAll(".thread-item");
+          if (items[info.threadIndex]) {
+            items[info.threadIndex].scrollIntoView({ behavior: "smooth", block: "center" });
           }
-
-          setTimeout(() => {
-            threadItem.scrollIntoView({ behavior: "smooth", block: "center" });
-          }, 100);
         });
       });
     });
   </script>
+</head>
+<body>
+  <h1>📡 FRONTLINE TERMINAL</h1>
+  <p class="timestamp_lastupdate">最后更新：加载中...</p>
+
+  <details>
+    <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
+    <div id="day-2025-06-04" data-loaded="false"><p>加载中...</p></div>
+  </details>
+
+  <details>
+    <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
+    <div id="day-2025-06-03" data-loaded="false"><p>加载中...</p></div>
+  </details>
+
+  <hr>
+  <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
 </body>
 </html>
