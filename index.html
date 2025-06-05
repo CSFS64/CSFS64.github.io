@@ -3,19 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>Frontline Terminal</title>
+  <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // 动态加载内容函数
+    function loadContent(id, path) {
+      const container = document.getElementById(id);
+
+      // 如果已经加载过内容，不再重新加载
+      if (container.dataset.loaded === "true") return;
+
+      fetch(path)
+        .then(response => response.text())
+        .then(html => {
+          container.innerHTML = html;
+          container.dataset.loaded = "true";
+        })
+        .catch(err => {
+          container.innerHTML = "<p>⚠️ 加载失败。</p>";
+        });
+    }
+  </script>
 </head>
 <body>
   <h1>📡 FRONTLINE TERMINAL</h1>
   <p class="timestamp_lastupdate">最后更新：2025-06-04</p>
 
-  <!-- 更新日志区域 -->
-  <details id="update-log" class="update-log" open>
-    <summary id="latest-update-summary">📢 最新更新：加载中...</summary>
-  </details>
-
-  <!-- 每日更新区域 -->
   <details>
     <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
     <div id="day-2025-06-04" data-loaded="false">
@@ -23,6 +37,7 @@
     </div>
   </details>
 
+  <!-- 日期一 -->
   <details>
     <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
     <div id="day-2025-06-03" data-loaded="false">
@@ -30,61 +45,90 @@
     </div>
   </details>
 
+  <!-- 日期二 -->
+  <details>
+    <summary onclick="loadContent('day-2025-06-02', 'days/2025-06-02.html')">📅 2025-06-02（暂时不要点，会出bug）</summary>
+    <div id="day-2025-06-02" data-loaded="false">
+      <p>加载中...</p>
+    </div>
+  </details>
+
+  <hr>
+  <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
+  
   <script>
-    function loadContent(id, path, callback) {
-      const container = document.getElementById(id);
-      if (container.dataset.loaded === "true") {
-        if (callback) callback();
-        return;
-      }
-
-      fetch(path)
-        .then(response => response.text())
-        .then(html => {
-          container.innerHTML = html;
-          container.dataset.loaded = "true";
-
-          const summary = container.querySelector('summary');
-          const threadItems = container.querySelectorAll('.thread .thread-item');
-          const lastItem = threadItems[threadItems.length - 1];
-          if (summary && lastItem) {
-            const summaryId = `event-${id}-0`;
-            summary.id = summaryId;
-            if (!lastItem.id) lastItem.id = `${summaryId}-latest-thread`;
-            const preview = (lastItem.textContent || '').trim().slice(0, 6);
-            const latestLink = `<a href="#" onclick="expandAndScroll('${id}', '${summaryId}', '${lastItem.id}')">📢 最新更新：${summary.textContent.trim()}：${preview}...</a>`;
-            document.getElementById('latest-update-summary').innerHTML = latestLink;
-          }
-
-          if (callback) callback();
-        })
-        .catch(() => {
-          container.innerHTML = "<p>⚠️ 加载失败。</p>";
+    // 页面加载时默认显示第一个消息
+    document.addEventListener("DOMContentLoaded", function () {
+      const threads = document.querySelectorAll('.thread');
+      threads.forEach(thread => {
+        const threadItems = thread.querySelectorAll('.thread-item');
+        threadItems[0].style.display = 'block'; // 默认显示第一个消息
+        threadItems.forEach((item, index) => {
+          if (index > 0) item.style.display = 'none'; // 隐藏后续消息
         });
-    }
-
-    function expandAndScroll(dayId, summaryId, threadId) {
-      const dayDetails = document.getElementById(dayId).closest('details');
-      dayDetails.open = true;
-
-      loadContent(dayId, `days/${dayId.replace('day-', '')}.html`, () => {
-        const summary = document.getElementById(summaryId);
-        if (summary) {
-          summary.click();
-          setTimeout(() => {
-            const expandBtn = summary.parentElement.querySelector('.expand-thread');
-            if (expandBtn) expandBtn.click();
-            if (threadId) {
-              const target = document.getElementById(threadId);
-              if (target) target.scrollIntoView({ behavior: 'smooth' });
-            }
-          }, 300);
-        }
       });
+    });
+    
+    // 展开/收起功能
+    function expandThread(button) {
+      const thread = button.closest('details');  // 找到当前按钮所在的 details 容器
+      const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
+      
+      // 检查当前是否展开
+      if (thread.classList.contains('expanded')) {
+        // 如果已展开，则收起
+        thread.classList.remove('expanded');
+        button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
+        threadItems.forEach((item, index) => {
+          if (index !== 0) {  // 始终保持第一个消息显示，其他消息隐藏
+            item.style.display = 'none';
+          }
+        });
+      } else {
+        // 如果未展开，则展开
+        thread.classList.add('expanded');
+        button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
+        threadItems.forEach(item => item.style.display = 'block');  // 显示所有 thread-item
+      }
     }
+  </script>
 
-    document.addEventListener("DOMContentLoaded", () => {
-      loadContent("day-2025-06-04", "days/2025-06-04.html");
+  <!-- 放在 </body> 前 -->
+  <div id="image-modal" class="modal" onclick="closeModal()">
+    <img id="modal-image" class="modal-image" src="">
+  </div>
+
+  <!-- 用事件委托方式绑定点击图片放大 -->
+  <script>
+    // 委托监听：只要点击的元素是 .separator-image 就执行放大
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('separator-image')) {
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-image');
+        modal.style.display = 'flex';
+        modalImg.src = e.target.src;
+      }
+    });
+  
+    function closeModal() {
+      document.getElementById('image-modal').style.display = 'none';
+    }
+  
+    document.addEventListener('keydown', function (e) {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    });
+  </script>
+
+  <script>
+    // 禁用双击和右键菜单
+    document.addEventListener("dblclick", e => e.preventDefault());
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("keydown", e => {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+        e.preventDefault();
+      }
     });
   </script>
 </body>
