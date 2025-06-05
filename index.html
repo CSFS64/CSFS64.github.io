@@ -122,7 +122,7 @@
             });
           });
 
-          updateElement.textContent = `最后更新：${latestDate} ${latestEventTitle} ${latestText}...`;
+          updateElement.textContent = `最后更新（点击跳转）：${latestDate} ${latestEventTitle}： ${latestText}...`;
         })
         .catch(() => {
           updateElement.textContent = "最后更新：⚠️ 获取失败";
