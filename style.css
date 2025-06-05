@@ -83,15 +83,6 @@ details > summary:hover {
   font-weight: bold;
 }
 
-.update-log > summary::before {
-  content: "▶";
-  position: absolute;
-  left: 0;
-  top: 0;
-  transform: rotate(0deg);
-  transition: transform 0.2s ease;
-}
-
 .update-log[open] > summary::before {
   content: "▼";
   transform: rotate(90deg);
