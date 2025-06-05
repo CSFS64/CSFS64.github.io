@@ -108,13 +108,16 @@
 
             threadItems.forEach(item => {
               const timestampDiv = item.querySelector(".timestamp");
-              const timeStr = timestampDiv?.textContent.trim() || "";
-
-              if (/^\d{1,2}:\d{2}$/.test(timeStr) && timeStr > latestTime) {
-                latestTime = timeStr;
-                const firstP = item.querySelector("p");
-                latestText = firstP?.textContent.trim().slice(0, 6) || "";
-                latestEventTitle = eventTitle;
+              const rawTime = timestampDiv?.textContent.trim() || "";
+              const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/); // 提取形如 10:45 的时间
+              if (timeMatch) {
+                const timeStr = timeMatch[0];
+                if (timeStr > latestTime) {
+                  latestTime = timeStr;
+                  const firstP = item.querySelector("p");
+                  latestText = firstP?.textContent.trim().slice(0, 6) || "";
+                  latestEventTitle = eventTitle;
+                }
               }
             });
           });
