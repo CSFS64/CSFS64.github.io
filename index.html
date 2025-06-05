@@ -43,27 +43,31 @@
   </div>
 
   <script>
-    function loadContent(id, path) {
+    function loadContent(id, path, callback) {
       const container = document.getElementById(id);
-      if (container.dataset.loaded === "true") return;
-
+      if (container.dataset.loaded === "true") {
+        if (callback) callback();
+        return;
+      }
+    
       fetch(path)
         .then(response => response.text())
         .then(html => {
           container.innerHTML = html;
           container.dataset.loaded = "true";
-
+    
           const temp = document.createElement('div');
           temp.innerHTML = html;
           const summaries = temp.querySelectorAll('summary');
           const updateList = document.getElementById('update-list');
           updateList.innerHTML = '';
-
+    
           summaries.forEach((summary, index) => {
             const text = summary.textContent.trim();
             const anchorId = `event-${id}-${index}`;
-            summary.setAttribute('id', anchorId);
-
+            const actualSummary = container.querySelectorAll('summary')[index];
+            actualSummary.setAttribute('id', anchorId);
+    
             const li = document.createElement('li');
             li.innerHTML = `<a href="#${anchorId}">${text}</a>`;
             li.querySelector('a').addEventListener('click', () => {
@@ -71,47 +75,46 @@
             });
             updateList.appendChild(li);
           });
-
-          const firstSummary = temp.querySelector('summary');
-          const allThreads = temp.querySelectorAll('.thread');
+    
+          const firstSummary = container.querySelector('summary');
+          const allThreads = container.querySelectorAll('.thread');
           if (firstSummary && allThreads.length > 0) {
             const threadItems = allThreads[0].querySelectorAll('.thread-item');
             const last = threadItems[threadItems.length - 1];
-            const previewText = (last.textContent || '').trim().slice(0, 6);
             if (!last.id) last.id = `${firstSummary.id}-latest-thread`;
-
+            const previewText = (last.textContent || '').trim().slice(0, 6);
             const logSummary = document.getElementById('latest-update-summary');
             logSummary.innerHTML = `<a href="#" onclick="expandAndScroll('${id}', '${firstSummary.id}', '${last.id}')">📢 最新更新：${firstSummary.textContent.trim()}：${previewText}...</a>`;
           }
+    
+          if (callback) callback();
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
         });
     }
 
+
     function expandAndScroll(dayId, summaryId, threadId) {
-      loadContent(dayId, `days/${dayId.replace('day-', '')}.html`);
-
-      setTimeout(() => {
-        const dayDetails = document.getElementById(dayId).closest('details');
-        dayDetails.open = true;
-
-        setTimeout(() => {
-          const summary = document.getElementById(summaryId);
-          if (summary) {
-            summary.click();
-            setTimeout(() => {
-              const expandBtn = summary.parentElement.querySelector('.expand-thread');
-              if (expandBtn) expandBtn.click();
-              if (threadId) {
-                const thread = document.getElementById(threadId);
-                if (thread) thread.scrollIntoView({ behavior: 'smooth' });
-              }
-            }, 300);
-          }
-        }, 300);
-      }, 500);
+    const dayDetails = document.getElementById(dayId).closest('details');
+    dayDetails.open = true;
+  
+    loadContent(dayId, `days/${dayId.replace('day-', '')}.html`, () => {
+        const summary = document.getElementById(summaryId);
+        if (summary) {
+          summary.click();  // 打开 summary 下的 details
+          setTimeout(() => {
+            const expandBtn = summary.parentElement.querySelector('.expand-thread');
+            if (expandBtn) expandBtn.click();
+            if (threadId) {
+              const thread = document.getElementById(threadId);
+              if (thread) thread.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 300); // 稍微等一下，确保 DOM 已更新
+        }
+      });
     }
+
 
     document.addEventListener("DOMContentLoaded", function () {
       loadContent("day-2025-06-04", "days/2025-06-04.html");
