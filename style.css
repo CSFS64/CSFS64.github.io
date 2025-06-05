@@ -41,6 +41,23 @@ a:hover {
   color: black;
 }
 
+/* —— 光标样式 —— */
+.timestamp_lastupdate {
+  font-family: 'Courier New', monospace;
+}
+
+.timestamp_lastupdate::after {
+  content: '';
+  display: inline-block;
+  width: 0.6ch;
+  background-color: #33ff33;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
 /* —— details 元素样式 —— */
 details {
   border: 1px solid #33ff33;
