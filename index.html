@@ -41,6 +41,7 @@
           container.innerHTML = html;
           container.dataset.loaded = "true";
 
+          // 默认隐藏每个 thread 的后续条目
           const threadContainers = container.querySelectorAll('.thread');
           threadContainers.forEach(thread => {
             const threadItems = thread.querySelectorAll('.thread-item');
@@ -49,6 +50,15 @@
               threadItems.forEach((item, index) => {
                 if (index > 0) item.style.display = 'none';
               });
+            }
+
+            // 如果没有展开按钮，自动添加
+            if (!thread.querySelector('.expand-thread')) {
+              const btn = document.createElement('button');
+              btn.className = 'expand-thread';
+              btn.textContent = '📖 展开全部';
+              btn.dataset.expanded = 'false';
+              thread.appendChild(btn);
             }
           });
 
@@ -141,7 +151,7 @@
         const originalText = updateEl.textContent;
         updateEl.dataset.original = originalText;
 
-        // 🟡 打字动画：正在定位 █
+        // 打字动画
         let text = " 正在定位";
         let index = 0;
         const typing = setInterval(() => {
@@ -153,11 +163,9 @@
           }
         }, 120);
 
-        // 展开当天 <details>
         const todayDetails = document.querySelector("details");
         todayDetails.open = true;
 
-        // 加载内容并在回调中展开 thread、事件并跳转
         loadContent('day-2025-06-04', 'days/2025-06-04.html', () => {
           const container = document.getElementById('day-2025-06-04');
           markLatestThread(container);
@@ -176,20 +184,25 @@
             if (thread) {
               thread.querySelectorAll(".thread-item").forEach(i => i.style.display = "block");
 
-              const expandBtn = thread.querySelector(".expand-thread");
-              if (expandBtn) {
-                thread.classList.add("expanded");
-                expandBtn.textContent = "📚 收起";
-                expandBtn.dataset.expanded = "true"; // 保证按钮状态同步
+              let expandBtn = thread.querySelector(".expand-thread");
+              if (!expandBtn) {
+                expandBtn = document.createElement('button');
+                expandBtn.className = 'expand-thread';
+                expandBtn.textContent = '📚 收起';
+                expandBtn.dataset.expanded = 'true';
+                thread.appendChild(expandBtn);
+              } else {
+                expandBtn.textContent = '📚 收起';
+                expandBtn.dataset.expanded = 'true';
               }
+              thread.classList.add("expanded");
             }
 
-            // 滚动跳转，并延迟清除“正在定位”
             latestItem.scrollIntoView({ behavior: "smooth", block: "center" });
             setTimeout(() => {
               updateEl.textContent = updateEl.dataset.original;
             }, 300);
-          }, 1000); // 延迟跳转 1 秒，等“正在定位”打印完
+          }, 1000);
         });
       }
     });
