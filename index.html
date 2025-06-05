@@ -145,7 +145,6 @@
 
         let text = " 正在定位";
         let index = 0;
-
         const typing = setInterval(() => {
           if (index <= text.length) {
             updateEl.textContent = originalText + text.slice(0, index) + " █";
@@ -155,34 +154,37 @@
           }
         }, 120);
 
-        const firstDetails = document.querySelector("details");
-        firstDetails.open = true;
+        const todayDetails = document.querySelector("details");
+        todayDetails.open = true;
 
         loadContent('day-2025-06-04', 'days/2025-06-04.html', () => {
           const container = document.getElementById('day-2025-06-04');
           markLatestThread(container);
 
-          const threads = container.querySelectorAll('.thread');
-          threads.forEach(thread => {
-            const items = thread.querySelectorAll('.thread-item');
-            items.forEach(item => item.style.display = "block");
-
-            const expandBtn = thread.querySelector(".expand-thread");
-            if (expandBtn) {
-              thread.classList.add("expanded");
-              expandBtn.textContent = "📚 收起";
-            }
-          });
-
           setTimeout(() => {
             const latestItem = document.getElementById("latest-thread");
-            if (latestItem) {
-              latestItem.scrollIntoView({ behavior: "smooth", block: "center" });
-              updateEl.textContent = updateEl.dataset.original;
-            } else {
+            if (!latestItem) {
               updateEl.textContent = updateEl.dataset.original + "（未找到目标）";
+              return;
             }
-          }, 2000);
+
+            const eventDetails = latestItem.closest("details");
+            if (eventDetails) eventDetails.open = true;
+
+            const thread = latestItem.closest(".thread");
+            if (thread) {
+              thread.querySelectorAll(".thread-item").forEach(i => i.style.display = "block");
+
+              const expandBtn = thread.querySelector(".expand-thread");
+              if (expandBtn) {
+                thread.classList.add("expanded");
+                expandBtn.textContent = "📚 收起";
+              }
+            }
+
+            latestItem.scrollIntoView({ behavior: "smooth", block: "center" });
+            updateEl.textContent = updateEl.dataset.original;
+          }, 300);
         });
       }
     });
