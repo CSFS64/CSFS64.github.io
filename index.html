@@ -3,33 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Frontline Terminal</title>
-  <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
-  <script>
-    // 动态加载内容函数
-    function loadContent(id, path) {
-      const container = document.getElementById(id);
-
-      // 如果已经加载过内容，不再重新加载
-      if (container.dataset.loaded === "true") return;
-
-      fetch(path)
-        .then(response => response.text())
-        .then(html => {
-          container.innerHTML = html;
-          container.dataset.loaded = "true";
-        })
-        .catch(err => {
-          container.innerHTML = "<p>⚠️ 加载失败。</p>";
-        });
-    }
-  </script>
+  <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
 </head>
 <body>
   <h1>📡 FRONTLINE TERMINAL</h1>
   <p class="timestamp_lastupdate">最后更新：2025-06-04</p>
 
+  <!-- 更新日志栏 -->
+  <details id="update-log" class="update-log">
+    <summary>📢 最新更新：加载中...</summary>
+    <ul id="update-list"></ul>
+  </details>
+
+  <!-- 每日内容入口 -->
   <details>
     <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
     <div id="day-2025-06-04" data-loaded="false">
@@ -37,7 +25,6 @@
     </div>
   </details>
 
-  <!-- 日期一 -->
   <details>
     <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
     <div id="day-2025-06-03" data-loaded="false">
@@ -45,7 +32,6 @@
     </div>
   </details>
 
-  <!-- 日期二 -->
   <details>
     <summary onclick="loadContent('day-2025-06-02', 'days/2025-06-02.html')">📅 2025-06-02（暂时不要点，会出bug）</summary>
     <div id="day-2025-06-02" data-loaded="false">
@@ -55,52 +41,82 @@
 
   <hr>
   <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
-  
-  <script>
-    // 页面加载时默认显示第一个消息
-    document.addEventListener("DOMContentLoaded", function () {
-      const threads = document.querySelectorAll('.thread');
-      threads.forEach(thread => {
-        const threadItems = thread.querySelectorAll('.thread-item');
-        threadItems[0].style.display = 'block'; // 默认显示第一个消息
-        threadItems.forEach((item, index) => {
-          if (index > 0) item.style.display = 'none'; // 隐藏后续消息
-        });
-      });
-    });
-    
-    // 展开/收起功能
-    function expandThread(button) {
-      const thread = button.closest('details');  // 找到当前按钮所在的 details 容器
-      const threadItems = thread.querySelectorAll('.thread-item');  // 获取所有 thread-item
-      
-      // 检查当前是否展开
-      if (thread.classList.contains('expanded')) {
-        // 如果已展开，则收起
-        thread.classList.remove('expanded');
-        button.textContent = "📖 展开全部";  // 更新按钮文本为 "展开"
-        threadItems.forEach((item, index) => {
-          if (index !== 0) {  // 始终保持第一个消息显示，其他消息隐藏
-            item.style.display = 'none';
-          }
-        });
-      } else {
-        // 如果未展开，则展开
-        thread.classList.add('expanded');
-        button.textContent = "📚 收起";  // 更新按钮文本为 "收起"
-        threadItems.forEach(item => item.style.display = 'block');  // 显示所有 thread-item
-      }
-    }
-  </script>
 
-  <!-- 放在 </body> 前 -->
+  <!-- 模态框图片查看器 -->
   <div id="image-modal" class="modal" onclick="closeModal()">
     <img id="modal-image" class="modal-image" src="">
   </div>
 
-  <!-- 用事件委托方式绑定点击图片放大 -->
+  <!-- 脚本部分 -->
   <script>
-    // 委托监听：只要点击的元素是 .separator-image 就执行放大
+    function loadContent(id, path) {
+      const container = document.getElementById(id);
+      if (container.dataset.loaded === "true") return;
+
+      fetch(path)
+        .then(response => response.text())
+        .then(html => {
+          container.innerHTML = html;
+          container.dataset.loaded = "true";
+
+          const temp = document.createElement('div');
+          temp.innerHTML = html;
+          const summaries = temp.querySelectorAll('summary');
+          const updateList = document.getElementById('update-list');
+          updateList.innerHTML = '';
+
+          summaries.forEach((summary, index) => {
+            const text = summary.textContent.trim();
+            const anchorId = `event-${id}-${index}`;
+            summary.setAttribute('id', anchorId);
+
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="#${anchorId}">${text}</a>`;
+            li.querySelector('a').addEventListener('click', () => {
+              const details = container.closest('details');
+              details.open = true;
+              document.getElementById(anchorId).scrollIntoView({ behavior: 'smooth' });
+            });
+
+            updateList.appendChild(li);
+
+            if (index === 0) {
+              document.querySelector('#update-log > summary').textContent = `📢 最新更新：${text}`;
+            }
+          });
+        })
+        .catch(() => {
+          container.innerHTML = "<p>⚠️ 加载失败。</p>";
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const threads = document.querySelectorAll('.thread');
+      threads.forEach(thread => {
+        const threadItems = thread.querySelectorAll('.thread-item');
+        threadItems[0].style.display = 'block';
+        threadItems.forEach((item, index) => {
+          if (index > 0) item.style.display = 'none';
+        });
+      });
+    });
+
+    function expandThread(button) {
+      const thread = button.closest('details');
+      const threadItems = thread.querySelectorAll('.thread-item');
+      if (thread.classList.contains('expanded')) {
+        thread.classList.remove('expanded');
+        button.textContent = "📖 展开全部";
+        threadItems.forEach((item, index) => {
+          if (index !== 0) item.style.display = 'none';
+        });
+      } else {
+        thread.classList.add('expanded');
+        button.textContent = "📚 收起";
+        threadItems.forEach(item => item.style.display = 'block');
+      }
+    }
+
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('separator-image')) {
         const modal = document.getElementById('image-modal');
@@ -109,20 +125,17 @@
         modalImg.src = e.target.src;
       }
     });
-  
+
     function closeModal() {
       document.getElementById('image-modal').style.display = 'none';
     }
-  
+
     document.addEventListener('keydown', function (e) {
       if (e.key === "Escape") {
         closeModal();
       }
     });
-  </script>
 
-  <script>
-    // 禁用双击和右键菜单
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
     document.addEventListener("keydown", e => {
