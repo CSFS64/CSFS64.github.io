@@ -6,7 +6,27 @@
   <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>📱 FRONTLINE TERMINAL</h1>
+  <p class="timestamp_lastupdate" style="cursor:pointer">最后更新：加载中...</p>
+
+  <details>
+    <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
+    <div id="day-2025-06-04" data-loaded="false"><p>加载中...</p></div>
+  </details>
+
+  <details>
+    <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
+    <div id="day-2025-06-03" data-loaded="false"><p>加载中...</p></div>
+  </details>
+
+  <hr>
+  <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
+
   <script>
+    let latestInfo = {};
+
     function loadContent(id, path, callback) {
       const container = document.getElementById(id);
       if (container.dataset.loaded === "true") {
@@ -37,39 +57,15 @@
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
         });
     }
-  </script>
-</head>
-<body>
-  <h1>📡 FRONTLINE TERMINAL</h1>
-  <p class="timestamp_lastupdate" style="cursor: pointer; text-decoration: underline;">最后更新：加载中...</p>
-
-  <details>
-    <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
-    <div id="day-2025-06-04" data-loaded="false"><p>加载中...</p></div>
-  </details>
-
-  <details>
-    <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
-    <div id="day-2025-06-03" data-loaded="false"><p>加载中...</p></div>
-  </details>
-
-  <hr>
-  <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
-
-  <script>
-    let latestTarget = null;
 
     document.addEventListener("DOMContentLoaded", function () {
       const updateElement = document.querySelector(".timestamp_lastupdate");
       const allDetails = document.querySelectorAll("details");
-
       if (allDetails.length === 0) return;
 
       const latestDetails = allDetails[0];
       const summary = latestDetails.querySelector("summary");
-      const onclick = summary.getAttribute("onclick");
-      const match = onclick.match(/loadContent\(['"](.+?)['"]\s*,\s*['"](.+?)['"]\)/);
-
+      const match = summary.getAttribute("onclick").match(/loadContent\('(.+?)',\s*'(.+?)'\)/);
       if (!match) return;
 
       const divId = match[1];
@@ -82,34 +78,19 @@
           container.innerHTML = html;
           container.dataset.loaded = "true";
 
-          const threadContainers = container.querySelectorAll('.thread');
-          threadContainers.forEach(thread => {
-            const threadItems = thread.querySelectorAll('.thread-item');
-            if (threadItems.length > 0) {
-              threadItems[0].style.display = 'block';
-              threadItems.forEach((item, index) => {
-                if (index > 0) item.style.display = 'none';
-              });
-            }
-          });
-
-          const dateMatch = summary.textContent.match(/\d{4}-\d{2}-\d{2}/);
-          const latestDate = dateMatch ? dateMatch[0] : "未知日期";
-
           const tempDiv = document.createElement("div");
           tempDiv.innerHTML = html;
 
           let latestTime = "00:00";
           let latestText = "";
           let latestEventTitle = "";
-          let targetHash = "";
+          let targetThreadHTML = "";
 
           const allDetailsInHtml = tempDiv.querySelectorAll("details");
-          allDetailsInHtml.forEach((detail, index) => {
+          allDetailsInHtml.forEach(detail => {
             const eventTitle = detail.querySelector("summary")?.textContent.trim() || "[未知事件]";
             const threadItems = detail.querySelectorAll(".thread-item");
-
-            threadItems.forEach((item, idx) => {
+            threadItems.forEach(item => {
               const timestampDiv = item.querySelector(".timestamp");
               const rawTime = timestampDiv?.textContent.trim() || "";
               const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/);
@@ -117,41 +98,52 @@
                 const timeStr = timeMatch[0];
                 if (timeStr > latestTime) {
                   latestTime = timeStr;
-                  const firstP = item.querySelector("p");
-                  latestText = firstP?.textContent.trim().slice(0, 6) || "";
+                  latestText = item.querySelector("p")?.textContent.trim().slice(0, 6) || "";
                   latestEventTitle = eventTitle;
-                  targetHash = `latest-${index}-${idx}`;
-                  item.setAttribute("id", targetHash);
+                  targetThreadHTML = item.outerHTML;
                 }
               }
             });
           });
 
-          latestTarget = targetHash;
-          updateElement.innerHTML = `最后更新（点击跳转）：${latestDate} ${latestEventTitle}：${latestText}...`;
+          updateElement.textContent = `最后更新（点击跳转）：${match[1].slice(4)} ${latestEventTitle}：${latestText}...`;
+
+          latestInfo = {
+            id: divId,
+            path: htmlPath,
+            eventTitle: latestEventTitle,
+            preview: latestText,
+            threadHTML: targetThreadHTML
+          };
         });
 
-      document.querySelector(".timestamp_lastupdate").addEventListener("click", function () {
-        const dayDetails = document.querySelector("details");
-        dayDetails.open = true;
-        loadContent("day-2025-06-04", "days/2025-06-04.html", function (container) {
-          const thread = container.querySelector(`#${latestTarget}`);
-          if (!thread) return;
+      // 点击跳转逻辑
+      updateElement.addEventListener("click", () => {
+        if (!latestInfo.id) return;
 
-          const parentDetails = thread.closest("details");
-          if (parentDetails) {
-            parentDetails.open = true;
-            parentDetails.classList.add("expanded");
-            const threadItems = parentDetails.querySelectorAll(".thread-item");
-            threadItems.forEach(item => item.style.display = 'block');
+        const summary = document.querySelector(`summary[onclick*="${latestInfo.id}"]`);
+        const details = summary?.parentElement;
+        if (!details) return;
 
-            const expandButton = parentDetails.querySelector(".expand-thread");
-            if (expandButton) expandButton.textContent = "📚 收起";
+        details.open = true;
+        loadContent(latestInfo.id, latestInfo.path, container => {
+          const detailsList = container.querySelectorAll("details");
+          detailsList.forEach(d => {
+            if (d.querySelector("summary")?.textContent.trim() === latestInfo.eventTitle) {
+              d.open = true;
+              const button = d.querySelector(".expand-thread");
+              if (button) button.click();
 
-            setTimeout(() => {
-              thread.scrollIntoView({ behavior: "smooth", block: "center" });
-            }, 100);
-          }
+              const temp = document.createElement("div");
+              temp.innerHTML = latestInfo.threadHTML;
+              const text = temp.textContent?.slice(0, 12);
+
+              const foundThread = Array.from(d.querySelectorAll(".thread-item")).find(item => {
+                return item.textContent.includes(text);
+              });
+              if (foundThread) foundThread.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
         });
       });
     });
@@ -198,15 +190,11 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === "Escape") closeModal();
     });
-  </script>
 
-  <script>
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
     document.addEventListener("keydown", e => {
-      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
-        e.preventDefault();
-      }
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) e.preventDefault();
     });
   </script>
 </body>
