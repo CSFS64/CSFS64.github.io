@@ -100,9 +100,8 @@
               const latestDate = dateMatch ? dateMatch[0] : "未知日期";
 
               // 提取标题（去掉日期与星期）
-              const rawText = summary.textContent.trim();
-              let title = rawText.replace(/^📅\s*\d{4}-\d{2}-\d{2}（.*?）\s*/, '').trim();
-              if (!title) title = '[无标题]';
+              let title = summary.dataset.title?.trim() || '[无标题]';
+
 
               // 虚拟 DOM 提取最后 thread-item 的前6字
               const tempDiv = document.createElement("div");
