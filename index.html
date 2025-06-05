@@ -170,19 +170,26 @@
             const eventDetails = latestItem.closest("details");
             if (eventDetails) eventDetails.open = true;
 
-            const thread = latestItem.closest(".thread");
-            if (thread) {
-              const expandBtn = thread.querySelector(".expand-thread");
-              if (expandBtn) {
-                expandBtn.click();
-
-                expandBtn.textContent = "📚 收起";
-                expandBtn.dataset.expanded = "true";
-                thread.classList.add("expanded");
-              }
+            const eventDetails = latestItem.closest("details");
+            if (eventDetails) {
+              eventDetails.open = true;
             
-              // ✅ 确保内容也被展开（即便按钮逻辑没写完整，也兜底）
-              thread.querySelectorAll(".thread-item").forEach(i => i.style.display = "block");
+              // 展开该事件中所有 thread
+              eventDetails.querySelectorAll(".thread").forEach(thread => {
+                thread.classList.add("expanded");
+            
+                // 展开所有条目
+                thread.querySelectorAll(".thread-item").forEach(item => {
+                  item.style.display = "block";
+                });
+            
+                // 更新按钮状态
+                const expandBtn = thread.querySelector(".expand-thread");
+                if (expandBtn) {
+                  expandBtn.textContent = "📚 收起";
+                  expandBtn.dataset.expanded = "true";
+                }
+              });
             }
 
             latestItem.scrollIntoView({ behavior: "smooth", block: "center" });
