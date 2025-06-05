@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <script>
-    // 标记当天所有 thread 中时间最新的一个为 id="latest-thread"
+    // 🔹 标记最新 thread
     function markLatestThread(container) {
       let latestMinutes = -1;
       let latestItem = null;
@@ -27,7 +27,7 @@
       }
     }
 
-    // 加载某个日期的 HTML 文件内容，插入指定容器
+    // 🔹 加载某日内容
     function loadContent(id, path, callback) {
       const container = document.getElementById(id);
       if (container.dataset.loaded === "true") {
@@ -41,7 +41,6 @@
           container.innerHTML = html;
           container.dataset.loaded = "true";
 
-          // 默认只显示每个 thread 的第一个条目
           const threadContainers = container.querySelectorAll('.thread');
           threadContainers.forEach(thread => {
             const threadItems = thread.querySelectorAll('.thread-item');
@@ -53,7 +52,6 @@
             }
           });
 
-          // 设置最新条目的 ID
           setTimeout(() => {
             markLatestThread(container);
             if (callback) callback();
@@ -69,7 +67,6 @@
   <h1>📡 FRONTLINE TERMINAL</h1>
   <p class="timestamp_lastupdate" style="cursor: pointer;">最后更新：加载中...</p>
 
-  <!-- 每日详情部分 -->
   <details>
     <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
     <div id="day-2025-06-04" data-loaded="false"><p>加载中...</p></div>
@@ -83,16 +80,13 @@
   <hr>
   <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
 
-  <!-- 页面加载后自动检测并显示“最后更新”信息 -->
   <script>
+    // 🔸 页面加载后设置“最后更新”
     document.addEventListener("DOMContentLoaded", function () {
       const updateElement = document.querySelector(".timestamp_lastupdate");
-      const allDetails = document.querySelectorAll("details");
-
-      const latestDetails = allDetails[0];
+      const latestDetails = document.querySelector("details");
       const summary = latestDetails.querySelector("summary");
-      const onclick = summary.getAttribute("onclick");
-      const match = onclick.match(/loadContent\(['"](.+?)['"]\s*,\s*['"](.+?)['"]\)/);
+      const match = summary.getAttribute("onclick").match(/loadContent\(['"](.+?)['"]\s*,\s*['"](.+?)['"]\)/);
       if (!match) return;
 
       const divId = match[1];
@@ -112,14 +106,13 @@
           let latestText = "";
           let latestEventTitle = "";
 
-          const allDetailsInHtml = tempDiv.querySelectorAll("details");
-          allDetailsInHtml.forEach(detail => {
+          tempDiv.querySelectorAll("details").forEach(detail => {
             const eventTitle = detail.querySelector("summary")?.textContent.trim() || "[未知事件]";
             const threadItems = detail.querySelectorAll(".thread-item");
 
             threadItems.forEach(item => {
-              const rawTime = item.querySelector(".timestamp")?.textContent || "";
-              const match = rawTime.match(/(\d{1,2}):(\d{2})/);
+              const raw = item.querySelector(".timestamp")?.textContent || "";
+              const match = raw.match(/(\d{1,2}):(\d{2})/);
               if (match) {
                 const total = parseInt(match[1]) * 60 + parseInt(match[2]);
                 if (total > latestMinutes) {
@@ -141,14 +134,14 @@
         });
     });
 
-    // 点击“最后更新”后跳转到最新条目，并展开相关区域
+    // 🔸 点击“最后更新”→ 自动展开 + 跳转最新 thread
     document.addEventListener("click", function (e) {
       if (e.target.classList.contains("timestamp_lastupdate")) {
         const updateEl = e.target;
         const originalText = updateEl.textContent;
         updateEl.dataset.original = originalText;
 
-        // 🔸 打字动画：“正在定位 █”
+        // 🟡 打字动画：正在定位 █
         let text = " 正在定位";
         let index = 0;
         const typing = setInterval(() => {
@@ -160,16 +153,15 @@
           }
         }, 120);
 
-        // 🔸 展开当天 <details>
+        // 展开当天 <details>
         const todayDetails = document.querySelector("details");
         todayDetails.open = true;
 
-        // 🔸 加载当天 HTML
+        // 加载内容并在回调中展开 thread、事件并跳转
         loadContent('day-2025-06-04', 'days/2025-06-04.html', () => {
           const container = document.getElementById('day-2025-06-04');
           markLatestThread(container);
 
-          // ⏱️ 等“正在定位”打印完 → 延迟 1000ms 再跳转
           setTimeout(() => {
             const latestItem = document.getElementById("latest-thread");
             if (!latestItem) {
@@ -177,11 +169,9 @@
               return;
             }
 
-            // 🔸 展开其所在事件 details
             const eventDetails = latestItem.closest("details");
             if (eventDetails) eventDetails.open = true;
 
-            // 🔸 展开其所属 thread
             const thread = latestItem.closest(".thread");
             if (thread) {
               thread.querySelectorAll(".thread-item").forEach(i => i.style.display = "block");
@@ -190,28 +180,28 @@
               if (expandBtn) {
                 thread.classList.add("expanded");
                 expandBtn.textContent = "📚 收起";
-                expandBtn.dataset.expanded = "true";
+                expandBtn.dataset.expanded = "true"; // 保证按钮状态同步
               }
             }
 
-            // 🔸 滚动定位并在完成后清除“正在定位”
+            // 滚动跳转，并延迟清除“正在定位”
             latestItem.scrollIntoView({ behavior: "smooth", block: "center" });
             setTimeout(() => {
               updateEl.textContent = updateEl.dataset.original;
             }, 300);
-          }, 1000);
+          }, 1000); // 延迟跳转 1 秒，等“正在定位”打印完
         });
       }
     });
 
-    // 处理“展开全部”按钮的点击切换行为
+    // 🔸 展开全部按钮 toggle
     document.addEventListener("click", function (e) {
       if (e.target.classList.contains("expand-thread")) {
         const button = e.target;
         const thread = button.closest("details, .thread");
         const threadItems = thread.querySelectorAll(".thread-item");
 
-        const isExpanded = thread.classList.contains("expanded") || button.dataset.expanded === "true";
+        const isExpanded = button.dataset.expanded === "true";
 
         if (isExpanded) {
           thread.classList.remove("expanded");
@@ -230,7 +220,7 @@
     });
   </script>
 
-  <!-- 图片点击放大查看功能 -->
+  <!-- 图片放大查看 -->
   <div id="image-modal" class="modal" onclick="closeModal()">
     <img id="modal-image" class="modal-image" src="">
   </div>
@@ -246,13 +236,9 @@
     function closeModal() {
       document.getElementById('image-modal').style.display = 'none';
     }
-
-    // 快捷键/右键防护
     document.addEventListener('keydown', function (e) {
       if (e.key === "Escape") closeModal();
-      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
-        e.preventDefault();
-      }
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) e.preventDefault();
     });
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
