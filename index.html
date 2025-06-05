@@ -3,124 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <title>Frontline Terminal</title>
+  <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
-  <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
   <script>
-    function loadContent(id, path, callback) {
+    function loadContent(id, path) {
       const container = document.getElementById(id);
-      if (container.dataset.loaded === "true") {
-        if (callback) callback(container);
-        return;
-      }
+      if (container.dataset.loaded === "true") return;
+
       fetch(path)
         .then(response => response.text())
         .then(html => {
           container.innerHTML = html;
           container.dataset.loaded = "true";
-          if (callback) callback(container);
+
+          const threadContainers = container.querySelectorAll('.thread');
+          threadContainers.forEach(thread => {
+            const threadItems = thread.querySelectorAll('.thread-item');
+            if (threadItems.length > 0) {
+              threadItems[0].style.display = 'block';
+              threadItems.forEach((item, index) => {
+                if (index > 0) item.style.display = 'none';
+              });
+            }
+          });
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
         });
     }
-
-    function toggleThread(thread, expand) {
-      const items = thread.querySelectorAll('.thread-item');
-      thread.classList.toggle('expanded', expand);
-      items.forEach((item, index) => {
-        item.style.display = expand || index === 0 ? 'block' : 'none';
-      });
-      const button = thread.querySelector('.expand-thread');
-      if (button) button.textContent = expand ? '📚 收起' : '📖 展开全部';
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const updateEl = document.querySelector(".timestamp_lastupdate");
-      const allDetails = document.querySelectorAll("details");
-      if (allDetails.length === 0) return;
-
-      const latestDetails = allDetails[0];
-      const summary = latestDetails.querySelector("summary");
-      const onclick = summary.getAttribute("onclick");
-      const match = onclick.match(/loadContent\(['"](.+?)['"]\s*,\s*['"](.+?)['"]\)/);
-      if (!match) return;
-
-      const divId = match[1];
-      const htmlPath = match[2];
-
-      fetch(htmlPath)
-        .then(r => r.text())
-        .then(html => {
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = html;
-
-          let latestTime = "00:00";
-          let latestText = "";
-          let latestEventTitle = "";
-          let latestThreadIndex = -1;
-
-          const allEventDetails = tempDiv.querySelectorAll("details");
-          allEventDetails.forEach(detail => {
-            const title = detail.querySelector("summary")?.textContent.trim() || "[未知事件]";
-            const threadItems = detail.querySelectorAll(".thread-item");
-            threadItems.forEach((item, idx) => {
-              const timeDiv = item.querySelector(".timestamp");
-              const rawTime = timeDiv?.textContent.trim() || "";
-              const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/);
-              if (timeMatch && timeMatch[0] > latestTime) {
-                latestTime = timeMatch[0];
-                latestText = item.querySelector("p")?.textContent.trim().slice(0, 6) || "";
-                latestEventTitle = title;
-                latestThreadIndex = idx;
-              }
-            });
-          });
-
-          updateEl.textContent = `最后更新（点击跳转）：${match[1].slice(4)} ${latestEventTitle}：${latestText}...`;
-
-          // 保存跳转信息
-          window._latestJump = {
-            containerId: divId,
-            path: htmlPath,
-            eventTitle: latestEventTitle,
-            threadIndex: latestThreadIndex
-          };
-        });
-
-      // 事件委托绑定展开/收起按钮
-      document.addEventListener("click", e => {
-        if (e.target.classList.contains("expand-thread")) {
-          const thread = e.target.closest("details").querySelector(".thread");
-          const expanded = thread.classList.contains("expanded");
-          toggleThread(thread, !expanded);
-        }
-      });
-
-      // 点击跳转到最新 thread
-      document.querySelector(".timestamp_lastupdate").addEventListener("click", () => {
-        const info = window._latestJump;
-        if (!info) return;
-
-        const dayDetails = document.querySelector(`div#${info.containerId}`).closest("details");
-        dayDetails.open = true;
-
-        loadContent(info.containerId, info.path, container => {
-          const eventDetails = [...container.querySelectorAll("details")].find(d =>
-            d.querySelector("summary")?.textContent.trim() === info.eventTitle
-          );
-          if (!eventDetails) return;
-
-          eventDetails.open = true;
-          const thread = eventDetails.querySelector(".thread");
-          toggleThread(thread, true);
-          const items = thread.querySelectorAll(".thread-item");
-          if (items[info.threadIndex]) {
-            items[info.threadIndex].scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        });
-      });
-    });
   </script>
 </head>
 <body>
@@ -136,8 +47,139 @@
     <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
     <div id="day-2025-06-03" data-loaded="false"><p>加载中...</p></div>
   </details>
-
+  
   <hr>
   <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const updateElement = document.querySelector(".timestamp_lastupdate");
+      const allDetails = document.querySelectorAll("details");
+
+      if (allDetails.length === 0) return;
+
+      const latestDetails = allDetails[0];
+      const summary = latestDetails.querySelector("summary");
+      const onclick = summary.getAttribute("onclick");
+      const match = onclick.match(/loadContent\(['"](.+?)['"]\s*,\s*['"](.+?)['"]\)/);
+
+      if (!match) return;
+
+      const divId = match[1];
+      const htmlPath = match[2];
+
+      fetch(htmlPath)
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById(divId);
+          container.innerHTML = html;
+          container.dataset.loaded = "true";
+
+          const threadContainers = container.querySelectorAll('.thread');
+          threadContainers.forEach(thread => {
+            const threadItems = thread.querySelectorAll('.thread-item');
+            if (threadItems.length > 0) {
+              threadItems[0].style.display = 'block';
+              threadItems.forEach((item, index) => {
+                if (index > 0) item.style.display = 'none';
+              });
+            }
+          });
+
+          const dateMatch = summary.textContent.match(/\d{4}-\d{2}-\d{2}/);
+          const latestDate = dateMatch ? dateMatch[0] : "未知日期";
+
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = html;
+
+          let latestTime = "00:00";
+          let latestText = "";
+          let latestEventTitle = "";
+
+          const allDetailsInHtml = tempDiv.querySelectorAll("details");
+          allDetailsInHtml.forEach(detail => {
+            const eventTitle = detail.querySelector("summary")?.textContent.replace(/\s+/g, ' ').trim() || "[未知事件]";
+            const threadItems = detail.querySelectorAll(".thread-item");
+
+            threadItems.forEach(item => {
+              const timestampDiv = item.querySelector(".timestamp");
+              const rawTime = timestampDiv?.textContent.trim() || "";
+              const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/); // 提取形如 10:45 的时间
+              if (timeMatch) {
+                const timeStr = timeMatch[0];
+                if (timeStr > latestTime) {
+                  latestTime = timeStr;
+                  const firstP = item.querySelector("p");
+                  latestText = firstP?.textContent.trim().slice(0, 6) || "";
+                  latestEventTitle = eventTitle;
+                }
+              }
+            });
+          });
+
+          updateElement.textContent = 最后更新（点击跳转）：${latestDate} ${latestEventTitle}：${latestText}...;
+        })
+        .catch(() => {
+          updateElement.textContent = "最后更新：⚠️ 获取失败";
+        });
+    });
+
+    // 用事件委托绑定“展开/收起”按钮逻辑
+    document.addEventListener("click", function (e) {
+      if (e.target.classList.contains("expand-thread")) {
+        const button = e.target;
+        const thread = button.closest("details");
+        const threadItems = thread.querySelectorAll(".thread-item");
+
+        if (thread.classList.contains("expanded")) {
+          thread.classList.remove("expanded");
+          button.textContent = "📖 展开全部";
+          threadItems.forEach((item, index) => {
+            if (index !== 0) item.style.display = "none";
+          });
+        } else {
+          thread.classList.add("expanded");
+          button.textContent = "📚 收起";
+          threadItems.forEach(item => item.style.display = "block");
+        }
+      }
+    });
+  </script>
+
+  <!-- 图片放大模态框 -->
+  <div id="image-modal" class="modal" onclick="closeModal()">
+    <img id="modal-image" class="modal-image" src="">
+  </div>
+
+  <script>
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('separator-image')) {
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-image');
+        modal.style.display = 'flex';
+        modalImg.src = e.target.src;
+      }
+    });
+
+    function closeModal() {
+      document.getElementById('image-modal').style.display = 'none';
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    });
+  </script>
+
+  <script>
+    document.addEventListener("dblclick", e => e.preventDefault());
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("keydown", e => {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </body>
 </html>
