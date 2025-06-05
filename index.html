@@ -13,7 +13,7 @@
 
   <!-- 更新日志区域 -->
   <details id="update-log" class="update-log">
-    <summary>📢 最新更新：加载中...</summary>
+    <summary id="latest-update-summary">📢 最新更新：加载中...</summary>
     <ul id="update-list"></ul>
   </details>
 
@@ -47,7 +47,6 @@
     <img id="modal-image" class="modal-image" src="">
   </div>
 
-  <!-- 脚本逻辑部分 -->
   <script>
     function loadContent(id, path) {
       const container = document.getElementById(id);
@@ -77,25 +76,54 @@
               detail.open = true;
               document.getElementById(anchorId).scrollIntoView({ behavior: 'smooth' });
             });
-
             updateList.appendChild(li);
-
-            if (index === 0) {
-              const logSummary = document.querySelector('#update-log > summary');
-              logSummary.textContent = `📢 最新更新：${text}`;
-            }
           });
+
+          // 找到最新事件和最后一个 thread-item
+          const firstSummary = temp.querySelector('summary');
+          const allThreads = temp.querySelectorAll('.thread');
+          if (firstSummary && allThreads.length > 0) {
+            const lastThread = allThreads[0].querySelectorAll('.thread-item');
+            const last = lastThread[lastThread.length - 1];
+            const previewText = (last.textContent || '').trim().slice(0, 6);
+            const logSummary = document.getElementById('latest-update-summary');
+            logSummary.innerHTML = `<a href="#" onclick="expandAndScroll('${id}', '${firstSummary.id}', '${last.id || ''}')">📢 最新更新：${firstSummary.textContent.trim()}：${previewText}...</a>`;
+
+            // 给最后一个 thread-item 添加 ID（如果没有）
+            if (!last.id) {
+              last.id = `${firstSummary.id}-latest-thread`;
+            }
+          }
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
         });
     }
 
+    function expandAndScroll(dayId, summaryId, threadId) {
+      const dayDetails = document.getElementById(dayId).closest('details');
+      dayDetails.open = true;
+      loadContent(dayId, `days/${dayId.replace('day-', '')}.html`);
+
+      setTimeout(() => {
+        const summary = document.getElementById(summaryId);
+        if (summary) {
+          summary.click();
+          setTimeout(() => {
+            const expandBtn = summary.parentElement.querySelector('.expand-thread');
+            if (expandBtn) expandBtn.click();
+            if (threadId) {
+              const thread = document.getElementById(threadId);
+              if (thread) thread.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 300);
+        }
+      }, 300);
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-      // 自动加载最新一天（手动写死）
       loadContent("day-2025-06-04", "days/2025-06-04.html");
 
-      // 默认只显示每个 thread 的第一个 thread-item
       const threads = document.querySelectorAll('.thread');
       threads.forEach(thread => {
         const threadItems = thread.querySelectorAll('.thread-item');
@@ -122,7 +150,6 @@
       }
     }
 
-    // 图片放大功能
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('separator-image')) {
         const modal = document.getElementById('image-modal');
@@ -140,7 +167,6 @@
       if (e.key === "Escape") closeModal();
     });
 
-    // 禁用开发者工具等
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
     document.addEventListener("keydown", e => {
