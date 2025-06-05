@@ -41,7 +41,6 @@
           container.innerHTML = html;
           container.dataset.loaded = "true";
 
-          // 默认隐藏每个 thread 的后续条目
           const threadContainers = container.querySelectorAll('.thread');
           threadContainers.forEach(thread => {
             const threadItems = thread.querySelectorAll('.thread-item');
@@ -50,15 +49,6 @@
               threadItems.forEach((item, index) => {
                 if (index > 0) item.style.display = 'none';
               });
-            }
-
-            // 如果没有展开按钮，自动添加
-            if (!thread.querySelector('.expand-thread')) {
-              const btn = document.createElement('button');
-              btn.className = 'expand-thread';
-              btn.textContent = '📖 展开全部';
-              btn.dataset.expanded = 'false';
-              thread.appendChild(btn);
             }
           });
 
@@ -184,14 +174,8 @@
             if (thread) {
               thread.querySelectorAll(".thread-item").forEach(i => i.style.display = "block");
 
-              let expandBtn = thread.querySelector(".expand-thread");
-              if (!expandBtn) {
-                expandBtn = document.createElement('button');
-                expandBtn.className = 'expand-thread';
-                expandBtn.textContent = '📚 收起';
-                expandBtn.dataset.expanded = 'true';
-                thread.appendChild(expandBtn);
-              } else {
+              const expandBtn = thread.querySelector(".expand-thread");
+              if (expandBtn) {
                 expandBtn.textContent = '📚 收起';
                 expandBtn.dataset.expanded = 'true';
               }
