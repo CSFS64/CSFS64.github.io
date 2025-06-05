@@ -7,9 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <script>
-    function loadContent(id, path) {
+    let jumpTargetId = null;
+
+    function loadContent(id, path, callback) {
       const container = document.getElementById(id);
-      if (container.dataset.loaded === "true") return;
+      if (container.dataset.loaded === "true") {
+        callback && callback();
+        return;
+      }
 
       fetch(path)
         .then(response => response.text())
@@ -27,6 +32,8 @@
               });
             }
           });
+
+          callback && callback();
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
@@ -36,7 +43,7 @@
 </head>
 <body>
   <h1>📡 FRONTLINE TERMINAL</h1>
-  <p class="timestamp_lastupdate">最后更新：加载中...</p>
+  <p class="timestamp_lastupdate" style="cursor: pointer; text-decoration: underline;">最后更新：加载中...</p>
 
   <details>
     <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
@@ -47,7 +54,7 @@
     <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
     <div id="day-2025-06-03" data-loaded="false"><p>加载中...</p></div>
   </details>
-  
+
   <hr>
   <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
 
@@ -55,14 +62,12 @@
     document.addEventListener("DOMContentLoaded", function () {
       const updateElement = document.querySelector(".timestamp_lastupdate");
       const allDetails = document.querySelectorAll("details");
-
       if (allDetails.length === 0) return;
 
       const latestDetails = allDetails[0];
       const summary = latestDetails.querySelector("summary");
       const onclick = summary.getAttribute("onclick");
       const match = onclick.match(/loadContent\(['"](.+?)['"]\s*,\s*['"](.+?)['"]\)/);
-
       if (!match) return;
 
       const divId = match[1];
@@ -75,36 +80,23 @@
           container.innerHTML = html;
           container.dataset.loaded = "true";
 
-          const threadContainers = container.querySelectorAll('.thread');
-          threadContainers.forEach(thread => {
-            const threadItems = thread.querySelectorAll('.thread-item');
-            if (threadItems.length > 0) {
-              threadItems[0].style.display = 'block';
-              threadItems.forEach((item, index) => {
-                if (index > 0) item.style.display = 'none';
-              });
-            }
-          });
-
-          const dateMatch = summary.textContent.match(/\d{4}-\d{2}-\d{2}/);
-          const latestDate = dateMatch ? dateMatch[0] : "未知日期";
-
           const tempDiv = document.createElement("div");
           tempDiv.innerHTML = html;
 
           let latestTime = "00:00";
           let latestText = "";
           let latestEventTitle = "";
+          let targetThreadId = "";
 
           const allDetailsInHtml = tempDiv.querySelectorAll("details");
-          allDetailsInHtml.forEach(detail => {
+          allDetailsInHtml.forEach((detail, dIndex) => {
             const eventTitle = detail.querySelector("summary")?.textContent.replace(/\s+/g, ' ').trim() || "[未知事件]";
             const threadItems = detail.querySelectorAll(".thread-item");
 
-            threadItems.forEach(item => {
+            threadItems.forEach((item, iIndex) => {
               const timestampDiv = item.querySelector(".timestamp");
               const rawTime = timestampDiv?.textContent.trim() || "";
-              const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/); // 提取形如 10:45 的时间
+              const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/);
               if (timeMatch) {
                 const timeStr = timeMatch[0];
                 if (timeStr > latestTime) {
@@ -112,73 +104,45 @@
                   const firstP = item.querySelector("p");
                   latestText = firstP?.textContent.trim().slice(0, 6) || "";
                   latestEventTitle = eventTitle;
+                  targetThreadId = `jump-${dIndex}-${iIndex}`;
+
+                  // 给真实 DOM 添加 ID 用于定位
+                  const realDetails = container.querySelectorAll("details")[dIndex];
+                  const realThread = realDetails?.querySelectorAll(".thread-item")[iIndex];
+                  if (realThread) realThread.id = targetThreadId;
                 }
               }
             });
           });
 
-          updateElement.textContent = `最后更新（点击跳转）：${latestDate} ${latestEventTitle}：${latestText}...`;
+          updateElement.textContent = `最后更新（点击跳转）：${divId.slice(4)} ${latestEventTitle}：${latestText}...`;
+          jumpTargetId = targetThreadId;
         })
         .catch(() => {
           updateElement.textContent = "最后更新：⚠️ 获取失败";
         });
-    });
 
-    // 用事件委托绑定“展开/收起”按钮逻辑
-    document.addEventListener("click", function (e) {
-      if (e.target.classList.contains("expand-thread")) {
-        const button = e.target;
-        const thread = button.closest("details");
-        const threadItems = thread.querySelectorAll(".thread-item");
+      // 添加点击跳转逻辑
+      updateElement.addEventListener("click", () => {
+        const detail = document.getElementById(divId)?.closest("details");
+        if (!detail.open) detail.open = true;
 
-        if (thread.classList.contains("expanded")) {
-          thread.classList.remove("expanded");
-          button.textContent = "📖 展开全部";
-          threadItems.forEach((item, index) => {
-            if (index !== 0) item.style.display = "none";
-          });
-        } else {
-          thread.classList.add("expanded");
-          button.textContent = "📚 收起";
-          threadItems.forEach(item => item.style.display = "block");
-        }
-      }
-    });
-  </script>
+        loadContent(divId, htmlPath, () => {
+          const threadItem = document.getElementById(jumpTargetId);
+          if (!threadItem) return;
 
-  <!-- 图片放大模态框 -->
-  <div id="image-modal" class="modal" onclick="closeModal()">
-    <img id="modal-image" class="modal-image" src="">
-  </div>
+          // 找到所属 details 元素，展开全文
+          const detailsWrapper = threadItem.closest("details");
+          if (detailsWrapper && !detailsWrapper.classList.contains("expanded")) {
+            const expandBtn = detailsWrapper.querySelector(".expand-thread");
+            if (expandBtn) expandBtn.click();
+          }
 
-  <script>
-    document.addEventListener('click', function (e) {
-      if (e.target.classList.contains('separator-image')) {
-        const modal = document.getElementById('image-modal');
-        const modalImg = document.getElementById('modal-image');
-        modal.style.display = 'flex';
-        modalImg.src = e.target.src;
-      }
-    });
-
-    function closeModal() {
-      document.getElementById('image-modal').style.display = 'none';
-    }
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === "Escape") {
-        closeModal();
-      }
-    });
-  </script>
-
-  <script>
-    document.addEventListener("dblclick", e => e.preventDefault());
-    document.addEventListener("contextmenu", e => e.preventDefault());
-    document.addEventListener("keydown", e => {
-      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
-        e.preventDefault();
-      }
+          setTimeout(() => {
+            threadItem.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 100);
+        });
+      });
     });
   </script>
 </body>
