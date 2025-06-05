@@ -5,16 +5,14 @@
   <title>Frontline Terminal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
-  <script defer data-domain="csfs64.github.io" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
 </head>
 <body>
   <h1>📡 FRONTLINE TERMINAL</h1>
   <p class="timestamp_lastupdate">最后更新：2025-06-04</p>
 
   <!-- 更新日志区域 -->
-  <details id="update-log" class="update-log">
+  <details id="update-log" class="update-log" open>
     <summary id="latest-update-summary">📢 最新更新：加载中...</summary>
-    <ul id="update-list"></ul>
   </details>
 
   <!-- 每日更新区域 -->
@@ -25,23 +23,6 @@
     </div>
   </details>
 
-  <details>
-    <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
-    <div id="day-2025-06-03" data-loaded="false">
-      <p>加载中...</p>
-    </div>
-  </details>
-
-  
-
-  <hr>
-  <p><em>你可以通过在 bilibili 给我充电来支持我的工作</em></p>
-
-  <!-- 图片放大模态框 -->
-  <div id="image-modal" class="modal" onclick="closeModal()">
-    <img id="modal-image" class="modal-image" src="">
-  </div>
-
   <script>
     function loadContent(id, path, callback) {
       const container = document.getElementById(id);
@@ -49,44 +30,25 @@
         if (callback) callback();
         return;
       }
-    
+
       fetch(path)
         .then(response => response.text())
         .then(html => {
           container.innerHTML = html;
           container.dataset.loaded = "true";
-    
-          const temp = document.createElement('div');
-          temp.innerHTML = html;
-          const summaries = temp.querySelectorAll('summary');
-          const updateList = document.getElementById('update-list');
-          updateList.innerHTML = '';
-    
-          summaries.forEach((summary, index) => {
-            const text = summary.textContent.trim();
-            const anchorId = `event-${id}-${index}`;
-            const actualSummary = container.querySelectorAll('summary')[index];
-            actualSummary.setAttribute('id', anchorId);
-    
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="#${anchorId}">${text}</a>`;
-            li.querySelector('a').addEventListener('click', () => {
-              expandAndScroll(id, anchorId, '');
-            });
-            updateList.appendChild(li);
-          });
-    
-          const firstSummary = container.querySelector('summary');
-          const allThreads = container.querySelectorAll('.thread');
-          if (firstSummary && allThreads.length > 0) {
-            const threadItems = allThreads[0].querySelectorAll('.thread-item');
-            const last = threadItems[threadItems.length - 1];
-            if (!last.id) last.id = `${firstSummary.id}-latest-thread`;
-            const previewText = (last.textContent || '').trim().slice(0, 6);
-            const logSummary = document.getElementById('latest-update-summary');
-            logSummary.innerHTML = `<a href="#" onclick="expandAndScroll('${id}', '${firstSummary.id}', '${last.id}')">📢 最新更新：${firstSummary.textContent.trim()}：${previewText}...</a>`;
+
+          const summary = container.querySelector('summary');
+          const threadItems = container.querySelectorAll('.thread .thread-item');
+          const lastItem = threadItems[threadItems.length - 1];
+          if (summary && lastItem) {
+            const summaryId = `event-${id}-0`;
+            summary.id = summaryId;
+            if (!lastItem.id) lastItem.id = `${summaryId}-latest-thread`;
+            const preview = (lastItem.textContent || '').trim().slice(0, 6);
+            const latestLink = `<a href="#" onclick="expandAndScroll('${id}', '${summaryId}', '${lastItem.id}')">📢 最新更新：${summary.textContent.trim()}：${preview}...</a>`;
+            document.getElementById('latest-update-summary').innerHTML = latestLink;
           }
-    
+
           if (callback) callback();
         })
         .catch(() => {
@@ -94,80 +56,28 @@
         });
     }
 
-
     function expandAndScroll(dayId, summaryId, threadId) {
-    const dayDetails = document.getElementById(dayId).closest('details');
-    dayDetails.open = true;
-  
-    loadContent(dayId, `days/${dayId.replace('day-', '')}.html`, () => {
+      const dayDetails = document.getElementById(dayId).closest('details');
+      dayDetails.open = true;
+
+      loadContent(dayId, `days/${dayId.replace('day-', '')}.html`, () => {
         const summary = document.getElementById(summaryId);
         if (summary) {
-          summary.click();  // 打开 summary 下的 details
+          summary.click();
           setTimeout(() => {
             const expandBtn = summary.parentElement.querySelector('.expand-thread');
             if (expandBtn) expandBtn.click();
             if (threadId) {
-              const thread = document.getElementById(threadId);
-              if (thread) thread.scrollIntoView({ behavior: 'smooth' });
+              const target = document.getElementById(threadId);
+              if (target) target.scrollIntoView({ behavior: 'smooth' });
             }
-          }, 300); // 稍微等一下，确保 DOM 已更新
+          }, 300);
         }
       });
     }
 
-
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", () => {
       loadContent("day-2025-06-04", "days/2025-06-04.html");
-
-      const threads = document.querySelectorAll('.thread');
-      threads.forEach(thread => {
-        const threadItems = thread.querySelectorAll('.thread-item');
-        threadItems[0].style.display = 'block';
-        threadItems.forEach((item, index) => {
-          if (index > 0) item.style.display = 'none';
-        });
-      });
-    });
-
-    function expandThread(button) {
-      const thread = button.closest('details');
-      const items = thread.querySelectorAll('.thread-item');
-      if (thread.classList.contains('expanded')) {
-        thread.classList.remove('expanded');
-        button.textContent = "📖 展开全部";
-        items.forEach((item, index) => {
-          if (index !== 0) item.style.display = 'none';
-        });
-      } else {
-        thread.classList.add('expanded');
-        button.textContent = "📚 收起";
-        items.forEach(item => item.style.display = 'block');
-      }
-    }
-
-    document.addEventListener('click', function (e) {
-      if (e.target.classList.contains('separator-image')) {
-        const modal = document.getElementById('image-modal');
-        const modalImg = document.getElementById('modal-image');
-        modal.style.display = 'flex';
-        modalImg.src = e.target.src;
-      }
-    });
-
-    function closeModal() {
-      document.getElementById('image-modal').style.display = 'none';
-    }
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === "Escape") closeModal();
-    });
-
-    document.addEventListener("dblclick", e => e.preventDefault());
-    document.addEventListener("contextmenu", e => e.preventDefault());
-    document.addEventListener("keydown", e => {
-      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
-        e.preventDefault();
-      }
     });
   </script>
 </body>
