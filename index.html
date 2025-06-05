@@ -7,9 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <script>
-    function loadContent(id, path) {
+    function loadContent(id, path, callback) {
       const container = document.getElementById(id);
-      if (container.dataset.loaded === "true") return;
+      if (container.dataset.loaded === "true") {
+        if (callback) callback(container);
+        return;
+      }
 
       fetch(path)
         .then(response => response.text())
@@ -27,6 +30,8 @@
               });
             }
           });
+
+          if (callback) callback(container);
         })
         .catch(() => {
           container.innerHTML = "<p>⚠️ 加载失败。</p>";
@@ -36,7 +41,7 @@
 </head>
 <body>
   <h1>📡 FRONTLINE TERMINAL</h1>
-  <p class="timestamp_lastupdate">最后更新：加载中...</p>
+  <p class="timestamp_lastupdate" style="cursor: pointer; text-decoration: underline;">最后更新：加载中...</p>
 
   <details>
     <summary onclick="loadContent('day-2025-06-04', 'days/2025-06-04.html')">📅 2025-06-04（星期三）</summary>
@@ -47,11 +52,13 @@
     <summary onclick="loadContent('day-2025-06-03', 'days/2025-06-03.html')">📅 2025-06-03（星期二）</summary>
     <div id="day-2025-06-03" data-loaded="false"><p>加载中...</p></div>
   </details>
-  
+
   <hr>
   <p><em>你可以通过在bilibili给我充电来支持我的工作</em></p>
 
   <script>
+    let latestTarget = null;
+
     document.addEventListener("DOMContentLoaded", function () {
       const updateElement = document.querySelector(".timestamp_lastupdate");
       const allDetails = document.querySelectorAll("details");
@@ -95,16 +102,17 @@
           let latestTime = "00:00";
           let latestText = "";
           let latestEventTitle = "";
+          let targetHash = "";
 
           const allDetailsInHtml = tempDiv.querySelectorAll("details");
-          allDetailsInHtml.forEach(detail => {
-            const eventTitle = detail.querySelector("summary")?.textContent.replace(/\s+/g, ' ').trim() || "[未知事件]";
+          allDetailsInHtml.forEach((detail, index) => {
+            const eventTitle = detail.querySelector("summary")?.textContent.trim() || "[未知事件]";
             const threadItems = detail.querySelectorAll(".thread-item");
 
-            threadItems.forEach(item => {
+            threadItems.forEach((item, idx) => {
               const timestampDiv = item.querySelector(".timestamp");
               const rawTime = timestampDiv?.textContent.trim() || "";
-              const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/); // 提取形如 10:45 的时间
+              const timeMatch = rawTime.match(/\b\d{1,2}:\d{2}\b/);
               if (timeMatch) {
                 const timeStr = timeMatch[0];
                 if (timeStr > latestTime) {
@@ -112,19 +120,42 @@
                   const firstP = item.querySelector("p");
                   latestText = firstP?.textContent.trim().slice(0, 6) || "";
                   latestEventTitle = eventTitle;
+                  targetHash = `latest-${index}-${idx}`;
+                  item.setAttribute("id", targetHash);
                 }
               }
             });
           });
 
-          updateElement.textContent = 最后更新（点击跳转）：${latestDate} ${latestEventTitle}：${latestText}...;
-        })
-        .catch(() => {
-          updateElement.textContent = "最后更新：⚠️ 获取失败";
+          latestTarget = targetHash;
+          updateElement.innerHTML = `最后更新（点击跳转）：${latestDate} ${latestEventTitle}：${latestText}...`;
         });
+
+      document.querySelector(".timestamp_lastupdate").addEventListener("click", function () {
+        const dayDetails = document.querySelector("details");
+        dayDetails.open = true;
+        loadContent("day-2025-06-04", "days/2025-06-04.html", function (container) {
+          const thread = container.querySelector(`#${latestTarget}`);
+          if (!thread) return;
+
+          const parentDetails = thread.closest("details");
+          if (parentDetails) {
+            parentDetails.open = true;
+            parentDetails.classList.add("expanded");
+            const threadItems = parentDetails.querySelectorAll(".thread-item");
+            threadItems.forEach(item => item.style.display = 'block');
+
+            const expandButton = parentDetails.querySelector(".expand-thread");
+            if (expandButton) expandButton.textContent = "📚 收起";
+
+            setTimeout(() => {
+              thread.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 100);
+          }
+        });
+      });
     });
 
-    // 用事件委托绑定“展开/收起”按钮逻辑
     document.addEventListener("click", function (e) {
       if (e.target.classList.contains("expand-thread")) {
         const button = e.target;
@@ -146,7 +177,6 @@
     });
   </script>
 
-  <!-- 图片放大模态框 -->
   <div id="image-modal" class="modal" onclick="closeModal()">
     <img id="modal-image" class="modal-image" src="">
   </div>
@@ -166,9 +196,7 @@
     }
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === "Escape") {
-        closeModal();
-      }
+      if (e.key === "Escape") closeModal();
     });
   </script>
 
