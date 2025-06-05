@@ -173,8 +173,8 @@
             const thread = latestItem.closest(".thread");
             if (thread) {
               const expandBtn = thread.querySelector(".expand-thread");
-              if (expandBtn && expandBtn.dataset.expanded !== "true") {
-                expandBtn.click(); // ✅ 触发按钮的完整逻辑：更新文本 + dataset
+              if (expandBtn) {
+                expandBtn.click();
               }
             
               // ✅ 确保内容也被展开（即便按钮逻辑没写完整，也兜底）
