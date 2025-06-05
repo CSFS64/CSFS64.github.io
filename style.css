@@ -84,7 +84,7 @@ details > summary:hover {
 }
 
 .update-log > summary::before {
-  content: \"▶\";
+  content: "▶";
   position: absolute;
   left: 0;
   top: 0;
@@ -93,7 +93,7 @@ details > summary:hover {
 }
 
 .update-log[open] > summary::before {
-  content: \"▼\";
+  content: "▼";
   transform: rotate(90deg);
 }
 
@@ -114,6 +114,7 @@ details > summary:hover {
   text-decoration: underline;
   cursor: pointer;
 }
+
 
 /* —— 视频样式 —— */
 video {
