@@ -64,29 +64,6 @@ details > summary:hover {
   color: black;
 }
 
-/* —— 最新更新 —— */
-.update-log {
-  border: 1px solid #33ff33;
-  background-color: rgba(0, 255, 0, 0.05);
-  color: #33ff33;
-  padding: 0.8em 1em;
-  margin-bottom: 1.5em;
-  font-size: 1em;
-  max-width: 640px;
-}
-
-.update-log > summary {
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.update-log a {
-  color: #66ff66;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-
 /* —— 视频样式 —— */
 video {
   width: 100%;
