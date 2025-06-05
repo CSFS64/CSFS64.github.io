@@ -31,6 +31,7 @@
             }
           });
 
+          // 找出当天最新的 thread-item 并加上 id
           let latestMinutes = -1;
           let latestItem = null;
           container.querySelectorAll(".thread-item").forEach(item => {
@@ -144,19 +145,24 @@
         });
     });
 
-    // 点击“最后更新”自动跳转 + 定位动画
+    // 点击“最后更新”
     document.addEventListener("click", function (e) {
       if (e.target.classList.contains("timestamp_lastupdate")) {
         const updateEl = e.target;
-        updateEl.dataset.original = updateEl.textContent;
-        let dots = 0, step = 0;
+        const originalText = updateEl.textContent;
+        updateEl.dataset.original = originalText;
 
-        const interval = setInterval(() => {
-          updateEl.textContent = `正在定位${'.'.repeat(dots % 4)} █`;
-          dots++;
-          step++;
-          if (step > 8) clearInterval(interval);
-        }, 250);
+        let text = " 正在定位";
+        let index = 0;
+
+        const typing = setInterval(() => {
+          if (index <= text.length) {
+            updateEl.textContent = originalText + text.slice(0, index) + " █";
+            index++;
+          } else {
+            clearInterval(typing);
+          }
+        }, 120);
 
         const firstDetails = document.querySelector("details");
         const summary = firstDetails.querySelector("summary");
@@ -176,15 +182,17 @@
           setTimeout(() => {
             const latestItem = document.getElementById("latest-thread");
             if (latestItem) {
-              latestItem.scrollIntoView({ behavior: "smooth" });
-              updateEl.textContent = updateEl.dataset.original + " █";
+              latestItem.scrollIntoView({ behavior: "smooth", block: "center" });
+              updateEl.textContent = updateEl.dataset.original;
+            } else {
+              updateEl.textContent = updateEl.dataset.original + "（未找到目标）";
             }
           }, 2000);
         });
       }
     });
 
-    // 手动展开/收起按钮
+    // 展开/收起
     document.addEventListener("click", function (e) {
       if (e.target.classList.contains("expand-thread")) {
         const button = e.target;
@@ -206,11 +214,10 @@
     });
   </script>
 
-  <!-- 图片放大模态框 -->
+  <!-- 图片放大 -->
   <div id="image-modal" class="modal" onclick="closeModal()">
     <img id="modal-image" class="modal-image" src="">
   </div>
-
   <script>
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('separator-image')) {
@@ -220,15 +227,12 @@
         modalImg.src = e.target.src;
       }
     });
-
     function closeModal() {
       document.getElementById('image-modal').style.display = 'none';
     }
-
     document.addEventListener('keydown', function (e) {
       if (e.key === "Escape") closeModal();
     });
-
     document.addEventListener("dblclick", e => e.preventDefault());
     document.addEventListener("contextmenu", e => e.preventDefault());
     document.addEventListener("keydown", e => {
