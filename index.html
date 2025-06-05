@@ -82,6 +82,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       const updateElement = document.querySelector(".timestamp_lastupdate");
       const allDetails = document.querySelectorAll("details");
+
       if (allDetails.length === 0) return;
 
       const latestDetails = allDetails[0];
@@ -111,6 +112,7 @@
           allDetailsInHtml.forEach(detail => {
             const eventTitle = detail.querySelector("summary")?.textContent.trim() || "[未知事件]";
             const threadItems = detail.querySelectorAll(".thread-item");
+
             threadItems.forEach(item => {
               const rawTime = item.querySelector(".timestamp")?.textContent || "";
               const match = rawTime.match(/(\d{1,2}):(\d{2})/);
@@ -154,12 +156,11 @@
         }, 120);
 
         const firstDetails = document.querySelector("details");
-        const summary = firstDetails.querySelector("summary");
-        summary.click();
+        firstDetails.open = true;
 
         loadContent('day-2025-06-04', 'days/2025-06-04.html', () => {
           const container = document.getElementById('day-2025-06-04');
-          markLatestThread(container); // 🔧 确保标记
+          markLatestThread(container);
 
           const threads = container.querySelectorAll('.thread');
           threads.forEach(thread => {
@@ -167,7 +168,7 @@
             items.forEach(item => item.style.display = "block");
 
             const expandBtn = thread.querySelector(".expand-thread");
-            if (expandBtn && !thread.classList.contains("expanded")) {
+            if (expandBtn) {
               thread.classList.add("expanded");
               expandBtn.textContent = "📚 收起";
             }
@@ -190,7 +191,8 @@
       if (e.target.classList.contains("expand-thread")) {
         const button = e.target;
         const thread = button.closest("details, .thread");
-        const threadItems = thread.querySelectorAll('.thread-item');
+        const threadItems = thread.querySelectorAll(".thread-item");
+
         if (thread.classList.contains("expanded")) {
           thread.classList.remove("expanded");
           button.textContent = "📖 展开全部";
