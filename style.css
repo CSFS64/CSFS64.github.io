@@ -136,8 +136,8 @@ video {
   font-size: 4em;
   color: #33ff33; /* 设置竖线的颜色 */
   margin-left: 1em
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 0.05em;
+  margin-bottom: 0.05em;
 }
 
 /* —— 换行控制 —— */
