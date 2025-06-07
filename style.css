@@ -81,6 +81,12 @@ details > summary:hover {
   color: black;
 }
 
+.timestamp_lastupdate:hover,
+#map-expand-text:hover {
+  background-color: #33ff33;
+  color: black;
+}
+
 /* —— 视频样式 —— */
 video {
   width: 100%;
