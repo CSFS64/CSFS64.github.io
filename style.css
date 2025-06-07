@@ -61,14 +61,14 @@ a:hover {
 #date-list {
   max-height: 15em; /* 保持你原来的设置 */
   overflow-y: auto;
-  padding-right: 20px;
+  padding-right: 18px;
   margin-bottom: 1em;
   position: relative; /* 必须加 */
 }
 
 /* 自定义滚动条样式 */
 #date-list::-webkit-scrollbar {
-  width: 18px;
+  width: 15px;
 }
 #date-list::-webkit-scrollbar-thumb {
   background: #33ff33;
