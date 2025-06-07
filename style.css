@@ -61,7 +61,7 @@ a:hover {
 #date-list {
   max-height: 15em; /* 根据实际情况微调，3条大概是15em */
   overflow-y: auto;
-  padding-right: 6px; /* 给滚动条留点空间 */
+  padding-right: 20px; /* 给滚动条留点空间 */
   margin-bottom: 1em;
 }
 
