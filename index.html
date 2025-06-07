@@ -254,12 +254,37 @@
     document.addEventListener("contextmenu", e => e.preventDefault());
   </script>
 
+  <script>
+    const iframe = document.getElementById("map-embed");
+    iframe.style.pointerEvents = "none"; // 先禁用默认点击行为
+  
+    // 创建一个透明的覆盖层用来捕获点击
+    const overlay = document.createElement("div");
+    overlay.style.position = "absolute";
+    overlay.style.top = iframe.offsetTop + "px";
+    overlay.style.left = iframe.offsetLeft + "px";
+    overlay.style.width = iframe.offsetWidth + "px";
+    overlay.style.height = iframe.offsetHeight + "px";
+    overlay.style.cursor = "pointer";
+    overlay.style.zIndex = 999;
+    overlay.style.background = "transparent";
+  
+    overlay.onclick = () => {
+      window.open("https://csfs64.github.io/test2/", "_blank");
+    };
+  
+    // 等待 DOM 完成后再添加 overlay
+    window.addEventListener("load", () => {
+      document.body.appendChild(overlay);
+    });
+  </script>
+
   <!-- 地图嵌入 -->
   <iframe
     src="https://csfs64.github.io/test2/"
     width="100%"
     height="800"
-    style="border: none;"
+    style="border: 2px solid #33ff33;"
     loading="lazy"
     allowfullscreen
   ></iframe>
