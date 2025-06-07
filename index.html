@@ -254,30 +254,6 @@
     document.addEventListener("contextmenu", e => e.preventDefault());
   </script>
 
-  <script>
-    window.addEventListener("load", () => {
-      const iframe = document.getElementById("map-embed");
-      iframe.style.pointerEvents = "none";
-  
-      const overlay = document.createElement("div");
-      overlay.style.position = "absolute";
-      overlay.style.top = iframe.offsetTop + "px";
-      overlay.style.left = iframe.offsetLeft + "px";
-      overlay.style.width = iframe.offsetWidth + "px";
-      overlay.style.height = iframe.offsetHeight + "px";
-      overlay.style.cursor = "pointer";
-      overlay.style.zIndex = 999;
-      overlay.style.background = "transparent";
-      overlay.title = "点击放大查看地图";
-  
-      overlay.onclick = () => {
-        window.open("https://csfs64.github.io/test2/", "_blank");
-      };
-  
-      document.body.appendChild(overlay);
-    });
-  </script>
-
   <!-- 地图嵌入 -->
   <iframe
     id="map-embed"
