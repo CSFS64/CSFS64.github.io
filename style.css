@@ -99,6 +99,7 @@ details > summary:hover {
 .timestamp_lastupdate {
   display: inline-block;
   padding: 0.2em 0.4em;
+  font-weight: bold;
 }
 
 .timestamp_lastupdate:hover {
@@ -109,6 +110,7 @@ details > summary:hover {
 #map-expand-text {
   display: inline-block;
   padding: 0.2em 0.4em;
+  font-weight: bold;
 }
 
 #map-expand-text:hover {
