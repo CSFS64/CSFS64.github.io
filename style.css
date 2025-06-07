@@ -106,6 +106,17 @@ details > summary:hover {
   color: black;
 }
 
+#bilibili-text {
+  display: inline-block;
+  padding: 0.2em 0.4em;
+  font-weight: bold;
+}
+
+#bilibili-text:hover {
+  background-color: #33ff33;
+  color: black;
+}
+
 #map-expand-text {
   display: inline-block;
   padding: 0.2em 0.4em;
