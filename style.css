@@ -66,6 +66,14 @@ a:hover {
   margin-bottom: 1em;
 }
 
+#date-list::-webkit-scrollbar {
+  width: 6px;
+}
+#date-list::-webkit-scrollbar-thumb {
+  background: #33ff33;
+  border-radius: 4px;
+}
+
 /* —— details 元素样式 —— */
 details {
   border: 1px solid #33ff33;
