@@ -66,11 +66,10 @@ a:hover {
 }
 
 #date-list::-webkit-scrollbar {
-  width: 6px;
+  width: 18px;
 }
 #date-list::-webkit-scrollbar-thumb {
   background: #33ff33;
-  border-radius: 4px;
 }
 
 /* —— details 元素样式 —— */
