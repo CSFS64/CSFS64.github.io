@@ -81,6 +81,18 @@ details > summary:hover {
   color: black;
 }
 
+.timestamp_lastupdate {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.timestamp_lastupdate:hover {
+  background-color: #33ff33;
+  color: black;
+}
+
 #map-expand-text {
   display: inline-block;
   padding: 4px 8px;
