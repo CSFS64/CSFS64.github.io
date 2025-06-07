@@ -214,3 +214,11 @@ iframe {
     height: auto;            /* 高度自适应 */
   }
 }
+
+@media (min-width: 768px) {
+  #map-embed {
+    width: 66.666vw; /* 屏幕宽度的 2/3 */
+    display: block;
+    margin: 1em auto; /* 居中显示 */
+  }
+}
