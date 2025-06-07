@@ -84,8 +84,6 @@ details > summary:hover {
 .timestamp_lastupdate {
   display: inline-block;
   padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
 }
 
 .timestamp_lastupdate:hover {
@@ -96,8 +94,6 @@ details > summary:hover {
 #map-expand-text {
   display: inline-block;
   padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
 }
 
 #map-expand-text:hover {
