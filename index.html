@@ -276,32 +276,6 @@
     loading="lazy"
     allowfullscreen
   ></iframe>
-
-  <script>
-    // ⬇️ details 展开时移出滚动容器显示
-    document.querySelectorAll("#date-list details").forEach(details => {
-      details.addEventListener("toggle", function () {
-        if (details.open) {
-          // 创建占位符
-          const placeholder = document.createComment("details-placeholder");
-          details.parentNode.insertBefore(placeholder, details.nextSibling);
-  
-          // 移出 #date-list 到 body 显示
-          document.body.appendChild(details);
-  
-          // 关闭后移回原位
-          const closeHandler = () => {
-            if (!details.open) {
-              placeholder.parentNode.insertBefore(details, placeholder);
-              placeholder.remove();
-              details.removeEventListener("toggle", closeHandler);
-            }
-          };
-          details.addEventListener("toggle", closeHandler);
-        }
-      });
-    });
-  </script>
 </body>
 </html>
 </body>
