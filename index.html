@@ -70,7 +70,7 @@
   <div id="date-list">
     <details>
       <summary onclick="loadContent('day-2025-06-07', 'days/2025-06-07.html')">📅 2025-06-07（星期六）</summary>
-      <div id="day-2025-06-06" data-loaded="false"><p>加载中...</p></div>
+      <div id="day-2025-06-07" data-loaded="false"><p>加载中...</p></div>
     </details>
     
     <details>
@@ -179,8 +179,8 @@
         const todayDetails = document.querySelector("details");
         todayDetails.open = true;
 
-        loadContent('day-2025-06-06', 'days/2025-06-06.html', () => {
-          const container = document.getElementById('day-2025-06-06');
+        loadContent('day-2025-06-07', 'days/2025-06-07.html', () => {
+          const container = document.getElementById('day-2025-06-07');
           markLatestThread(container);
 
           setTimeout(() => {
